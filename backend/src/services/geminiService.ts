@@ -58,7 +58,7 @@ Sentiment:`;
             throw new Error('Failed to analyze sentiment');
         }
 
-        const data: GeminiResponse = await response.json();
+        const data = (await response.json()) as GeminiResponse;
         const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase();
 
         // Validate and normalize the response
