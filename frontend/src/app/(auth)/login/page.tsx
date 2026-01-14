@@ -42,13 +42,13 @@ export default function LoginPage() {
             <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
                 <div className="max-w-md w-full mx-auto">
                     {/* Logo */}
-                    <Link href="/" className="inline-flex items-center gap-2 mb-12">
-                        <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <Link href="/" className="inline-flex items-center gap-3 mb-12">
+                        <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                         </div>
-                        <span className="text-xl font-bold gradient-text">Feedback Pulse</span>
+                        <span className="text-2xl font-display font-bold text-gray-900 tracking-tight">Feedback Pulse</span>
                     </Link>
 
                     {/* Header */}
@@ -139,16 +139,17 @@ export default function LoginPage() {
             </div>
 
             {/* Right Side - Decorative */}
-            <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-600 via-accent-600 to-primary-700 items-center justify-center p-12">
-                <div className="max-w-lg text-center text-white">
-                    <div className="w-24 h-24 bg-white/20 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-xl">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-900 to-black items-center justify-center p-12 relative overflow-hidden">
+                <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
+                <div className="max-w-lg text-center text-white relative z-10">
+                    <div className="w-24 h-24 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-8 backdrop-blur-xl border border-white/20">
+                        <svg className="w-12 h-12 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
                     </div>
-                    <h2 className="text-3xl font-bold mb-4">Collect Feedback Effortlessly</h2>
-                    <p className="text-white/80 text-lg">
-                        Integrate our widget in seconds and start receiving valuable feedback from your users.
+                    <h2 className="text-4xl font-display font-bold mb-6">Collect Feedback Effortlessly</h2>
+                    <p className="text-gray-400 text-lg leading-relaxed">
+                        Integrate our widget in seconds and start receiving valuable insights from your users.
                     </p>
                 </div>
             </div>

@@ -11,6 +11,9 @@ export const metadata: Metadata = {
         description: 'Collect & Manage User Feedback with AI-Powered Insights',
         type: 'website',
     },
+    icons: {
+        icon: '/icon.svg',
+    },
 };
 
 export default function RootLayout({
