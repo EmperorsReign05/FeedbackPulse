@@ -6,10 +6,8 @@
 
 @layer base {
   :root {
-    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
-    --gradient-dark: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #3730a3 100%);
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(229, 231, 235, 0.5);
   }
 
   html {
@@ -18,31 +16,27 @@
 
   body {
     @apply font-sans antialiased bg-gray-50 text-gray-900;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-    background-attachment: fixed;
   }
 }
 
 @layer components {
   /* Glass Card */
   .glass-card {
-    @apply bg-white/80 backdrop-blur-xl border border-white/20 shadow-glass rounded-2xl;
+    @apply bg-white border border-gray-100 shadow-sm rounded-xl;
   }
 
-  /* Gradient Text */
+  /* Gradient Text - Changed to solid for cleaner look */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 via-accent-500 to-accent-600;
+    @apply text-gray-900;
   }
 
   /* Primary Button */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white font-semibold rounded-xl 
-           shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 
-           transform hover:-translate-y-0.5 transition-all duration-200
+    @apply px-6 py-2.5 bg-primary-600 text-white font-medium rounded-lg
+           shadow-sm hover:bg-primary-700 hover:shadow
+           transition-all duration-200
            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+           disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   /* Secondary Button */
@@ -166,8 +160,9 @@
   }
 
   /* Gradient Background Animation */
+  /* Gradient Background Animation - Updated to Blue */
   .bg-gradient-animated {
-    background: linear-gradient(-45deg, #6366f1, #8b5cf6, #a855f7, #6366f1);
+    background: linear-gradient(-45deg, #3b82f6, #2563eb, #1d4ed8, #3b82f6);
     background-size: 400% 400%;
     animation: gradient 8s ease infinite;
   }

@@ -7,28 +7,28 @@ import config from '../config';
  * Serves the widget JavaScript file
  */
 export const serveWidget = async (req: Request, res: Response): Promise<void> => {
-    const projectKey = req.query.key as string;
+  const projectKey = req.query.key as string;
 
-    if (!projectKey) {
-        res.setHeader('Content-Type', 'application/javascript');
-        res.send(`console.error('[Feedback Pulse] Error: No project key provided');`);
-        return;
-    }
+  if (!projectKey) {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`console.error('[Feedback Pulse] Error: No project key provided');`);
+    return;
+  }
 
-    // Verify project exists
-    const project = await projectService.getProjectByKey(projectKey);
+  // Verify project exists
+  const project = await projectService.getProjectByKey(projectKey);
 
-    if (!project) {
-        res.setHeader('Content-Type', 'application/javascript');
-        res.send(`console.error('[Feedback Pulse] Error: Invalid project key');`);
-        return;
-    }
+  if (!project) {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`console.error('[Feedback Pulse] Error: Invalid project key');`);
+    return;
+  }
 
-    const backendUrl = config.isProduction
-        ? process.env.BACKEND_URL || 'https://your-backend.onrender.com'
-        : `http://localhost:${config.port}`;
+  const backendUrl = config.isProduction
+    ? process.env.BACKEND_URL || 'https://your-backend.onrender.com'
+    : `http://localhost:${config.port}`;
 
-    const widgetJs = `
+  const widgetJs = `
 (function() {
   // Prevent multiple initializations
   if (window.__feedbackPulseLoaded) return;
@@ -46,10 +46,10 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: #3b82f6;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -58,7 +58,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
     }
     #fp-widget-button:hover {
       transform: scale(1.1);
-      box-shadow: 0 6px 25px rgba(99, 102, 241, 0.5);
+      box-shadow: 0 6px 25px rgba(59, 130, 246, 0.5);
     }
     #fp-widget-button svg {
       width: 24px;
@@ -130,8 +130,8 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
     #fp-widget-modal select:focus,
     #fp-widget-modal textarea:focus {
       outline: none;
-      border-color: #6366f1;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
     #fp-widget-modal textarea {
       min-height: 120px;
@@ -161,7 +161,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
       background: #e5e7eb;
     }
     #fp-widget-submit {
-      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      background: #3b82f6;
       border: none;
       color: white;
     }
@@ -341,7 +341,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
 })();
 `;
 
-    res.setHeader('Content-Type', 'application/javascript');
-    res.setHeader('Cache-Control', 'public, max-age=3600');
-    res.send(widgetJs);
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(widgetJs);
 };
