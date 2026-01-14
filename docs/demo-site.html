@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Site - Feedback Pulse Widget Test</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 600px;
+      width: 90%;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .logo svg {
+      width: 40px;
+      height: 40px;
+      fill: white;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #1f2937;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 16px;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+
+    .instructions {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 24px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .instructions h2 {
+      font-size: 16px;
+      color: #374151;
+      margin-bottom: 16px;
+    }
+
+    .instructions ol {
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.8;
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin-bottom: 8px;
+    }
+
+    .instructions code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 12px;
+    }
+
+    .key-input {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .key-input input {
+      flex: 1;
+      padding: 14px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .key-input input:focus {
+      border-color: #6366f1;
+    }
+
+    .key-input button {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .key-input button:hover {
+      opacity: 0.9;
+    }
+
+    .status {
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    .status.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .status.info {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .arrow {
+      position: fixed;
+      bottom: 100px;
+      right: 100px;
+      color: white;
+      font-size: 24px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .footer {
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .footer a {
+      color: #6366f1;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <svg viewBox="0 0 24 24">
+        <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+      </svg>
+    </div>
+    
+    <h1>Feedback Pulse Demo</h1>
+    <p class="subtitle">
+      This is a demo page to test the Feedback Pulse widget.<br>
+      Enter your project key below to load the widget.
+    </p>
+
+    <div class="instructions">
+      <h2>📋 How to Test</h2>
+      <ol>
+        <li>Start the backend server at <code>http://localhost:8080</code></li>
+        <li>Create an account and project in the dashboard</li>
+        <li>Copy your project key (e.g., <code>fp_xxxxxxxxxx</code>)</li>
+        <li>Paste it below and click "Load Widget"</li>
+        <li>Click the floating button (bottom-right) to submit feedback</li>
+      </ol>
+    </div>
+
+    <div class="key-input">
+      <input 
+        type="text" 
+        id="projectKey" 
+        placeholder="Enter your project key (e.g., fp_aBcDeFgHiJ)"
+      >
+      <button onclick="loadWidget()">Load Widget</button>
+    </div>
+
+    <div id="status" class="status info" style="display: none;"></div>
+
+    <p class="footer">
+      Powered by <a href="http://localhost:3000" target="_blank">Feedback Pulse</a>
+    </p>
+  </div>
+
+  <div id="arrow" class="arrow" style="display: none;">
+    ↘️ Click the widget!
+  </div>
+
+  <script>
+    const BACKEND_URL = 'http://localhost:8080';
+    let widgetLoaded = false;
+
+    function showStatus(message, type) {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type}`;
+      status.style.display = 'block';
+    }
+
+    function loadWidget() {
+      const keyInput = document.getElementById('projectKey');
+      const key = keyInput.value.trim();
+
+      if (!key) {
+        showStatus('Please enter a project key', 'error');
+        return;
+      }
+
+      if (widgetLoaded) {
+        showStatus('Widget already loaded. Refresh the page to load a different project.', 'info');
+        return;
+      }
+
+      // Remove any existing widget
+      const existingScript = document.getElementById('feedback-pulse-widget');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      // Reset widget flag
+      window.__feedbackPulseLoaded = false;
+
+      // Load the widget script
+      const script = document.createElement('script');
+      script.id = 'feedback-pulse-widget';
+      script.src = `${BACKEND_URL}/widget.js?key=${encodeURIComponent(key)}`;
+      script.async = true;
+
+      script.onload = function() {
+        showStatus('✅ Widget loaded successfully! Look for the floating button in the bottom-right corner.', 'success');
+        document.getElementById('arrow').style.display = 'block';
+        widgetLoaded = true;
+      };
+
+      script.onerror = function() {
+        showStatus('❌ Failed to load widget. Make sure the backend is running.', 'error');
+      };
+
+      document.body.appendChild(script);
+    }
+
+    // Allow Enter key to load widget
+    document.getElementById('projectKey').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        loadWidget();
+      }
+    });
+
+    // Check if backend is running
+    fetch(`${BACKEND_URL}/health`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          showStatus('✅ Backend server is running. Enter your project key to load the widget.', 'success');
+        }
+      })
+      .catch(() => {
+        showStatus('⚠️ Backend server is not running. Start it with: cd backend && npm run dev', 'error');
+      });
+  </script>
+</body>
+</html>
