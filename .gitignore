@@ -1,0 +1,55 @@
+# =========================
+# Root / general
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+
+# =========================
+# Environment files (IMPORTANT)
+# =========================
+.env
+.env.*
+.env.local
+!.env.example
+
+# =========================
+# Node / npm / yarn / pnpm
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Next.js
+# =========================
+.next/
+out/
+.vercel/
+
+# =========================
+# Build outputs
+# =========================
+dist/
+build/
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+
+# =========================
+# Prisma
+# =========================
+backend/prisma/dev.db
+backend/prisma/dev.db-journal
+
+# =========================
+# IDE
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
