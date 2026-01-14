@@ -79,7 +79,7 @@ export const getFeedback = async (
 
         res.json({
             success: true,
-            ...feedback,
+            data: feedback,
         });
     } catch (error) {
         next(error);

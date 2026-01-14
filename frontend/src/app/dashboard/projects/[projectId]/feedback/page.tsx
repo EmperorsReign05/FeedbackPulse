@@ -34,9 +34,13 @@ export default function FeedbackPage() {
         setIsLoading(true);
         const response = await feedbackApi.list(projectId, page, 10, filter);
         if (response.success && response.data) {
-            setFeedback(response.data.data);
-            setTotalPages(response.data.totalPages);
-            setTotal(response.data.total);
+            setFeedback(response.data.data || []);
+            setTotalPages(response.data.totalPages || 1);
+            setTotal(response.data.total || 0);
+        } else {
+            setFeedback([]);
+            setTotalPages(1);
+            setTotal(0);
         }
         setIsLoading(false);
     }, [projectId, page, filter]);
@@ -77,7 +81,7 @@ export default function FeedbackPage() {
             setFeedback((prev) =>
                 prev.map((f) =>
                     f.id === feedbackId
-                        ? { ...f, labels: [...f.labels, response.data!] }
+                        ? { ...f, labels: [...(f.labels || []), response.data!] }
                         : f
                 )
             );
@@ -92,7 +96,7 @@ export default function FeedbackPage() {
             setFeedback((prev) =>
                 prev.map((f) =>
                     f.id === feedbackId
-                        ? { ...f, labels: f.labels.filter((l) => l.id !== labelId) }
+                        ? { ...f, labels: (f.labels || []).filter((l) => l.id !== labelId) }
                         : f
                 )
             );
@@ -134,8 +138,8 @@ export default function FeedbackPage() {
                             key={f}
                             onClick={() => handleFilterChange(f)}
                             className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${filter === f
-                                    ? 'bg-primary-100 text-primary-700'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-primary-100 text-primary-700'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {f}
@@ -203,7 +207,7 @@ export default function FeedbackPage() {
 
                             {/* Labels */}
                             <div className="flex flex-wrap gap-2 mb-4">
-                                {item.labels.map((label) => (
+                                {(item.labels || []).map((label) => (
                                     <span
                                         key={label.id}
                                         className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-sm"
