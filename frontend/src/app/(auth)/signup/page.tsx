@@ -7,7 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupSchema, SignupFormData } from '@/lib/validation';
 import { authApi, setToken } from '@/lib/api';
-import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
+import { GoogleOAuthProvider, CredentialResponse } from '@react-oauth/google';
+import ResponsiveGoogleButton from '@/components/ResponsiveGoogleButton';
 
 export default function SignupPage() {
     const router = useRouter();
@@ -205,7 +206,7 @@ export default function SignupPage() {
                             </div>
 
                             <div className="w-full">
-                                <GoogleLogin
+                                <ResponsiveGoogleButton
                                     onSuccess={async (credentialResponse: CredentialResponse) => {
                                         if (credentialResponse.credential) {
                                             setIsLoading(true);
@@ -228,11 +229,7 @@ export default function SignupPage() {
                                     onError={() => {
                                         setError('Google Signup Failed');
                                     }}
-                                    theme="outline"
-                                    size="large"
-                                    width="100%"
                                     text="continue_with"
-                                    shape="rectangular"
                                 />
                             </div>
                         </form>
