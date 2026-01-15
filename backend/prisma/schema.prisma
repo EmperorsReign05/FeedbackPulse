@@ -1,5 +1,3 @@
-// Prisma schema for Feedback Pulse
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User model for authentication
 model User {
   id           String    @id @default(cuid())
   email        String    @unique
@@ -21,44 +18,28 @@ model User {
   @@map("users")
 }
 
-// Project model - for multiple projects
 model Project {
   id         String     @id @default(cuid())
   userId     String
   name       String
   projectKey String     @unique
   createdAt  DateTime   @default(now())
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   feedback   Feedback[]
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([projectKey])
   @@map("projects")
 }
 
-// Feedback type enum
-enum FeedbackType {
-  Bug
-  Feature
-  Other
-}
-
-// Sentiment enum for AI analysis
-enum Sentiment {
-  positive
-  neutral
-  negative
-}
-
-// Feedback model - stores submissions
 model Feedback {
-  id        String        @id @default(cuid())
+  id        String          @id @default(cuid())
   projectId String
   type      FeedbackType
   message   String
   sentiment Sentiment?
-  createdAt DateTime      @default(now())
-  project   Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime        @default(now())
+  project   Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   labels    FeedbackLabel[]
 
   @@index([projectId])
@@ -67,7 +48,6 @@ model Feedback {
   @@map("feedback")
 }
 
-// FeedbackLabel model - allows tagging feedback with labels
 model FeedbackLabel {
   id         String   @id @default(cuid())
   feedbackId String
@@ -77,4 +57,16 @@ model FeedbackLabel {
 
   @@index([feedbackId])
   @@map("feedback_labels")
+}
+
+enum FeedbackType {
+  Bug
+  Feature
+  Other
+}
+
+enum Sentiment {
+  positive
+  neutral
+  negative
 }

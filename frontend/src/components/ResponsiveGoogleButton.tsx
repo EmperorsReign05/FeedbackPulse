@@ -36,7 +36,7 @@ export default function ResponsiveGoogleButton({
     }, []);
 
     return (
-        <div ref={containerRef} className="w-full flex justify-center">
+        <div ref={containerRef} className="w-full">
             <GoogleLogin
                 onSuccess={onSuccess}
                 onError={onError}
