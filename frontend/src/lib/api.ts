@@ -131,6 +131,12 @@ export const authApi = {
         }),
 
     me: () => apiRequest<User>('/api/auth/me'),
+
+    googleLogin: (idToken: string) =>
+        apiRequest<AuthResponse>('/api/auth/google', {
+            method: 'POST',
+            body: JSON.stringify({ idToken }),
+        }),
 };
 
 // Projects API

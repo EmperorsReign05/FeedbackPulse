@@ -98,3 +98,43 @@ export const me = async (
         next(error);
     }
 };
+
+// POST /api/auth/google
+// Authenticates with Google
+export const googleLogin = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { idToken } = req.body;
+
+        if (!idToken) {
+            res.status(400).json({
+                success: false,
+                error: 'ID token is required',
+            });
+            return;
+        }
+
+        const result = await authService.googleLogin(idToken);
+
+        if (!result.success) {
+            res.status(401).json({
+                success: false,
+                error: result.error,
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            data: {
+                token: result.token,
+                user: result.user,
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -24,9 +24,7 @@ export interface PaginatedFeedback {
     totalPages: number;
 }
 
-/**
- * Submits feedback from the widget (public endpoint)
- */
+// Submits feedback from the widget (public endpoint)
 export const submitFeedback = async (
     projectId: string,
     input: Omit<SubmitFeedbackInput, 'projectKey'>
@@ -51,9 +49,7 @@ export const submitFeedback = async (
     return feedback;
 };
 
-/**
- * Gets paginated feedback for a project
- */
+// Gets paginated feedback for a project
 export const getFeedback = async (
     projectId: string,
     query: FeedbackQueryInput
@@ -97,9 +93,7 @@ export const getFeedback = async (
     };
 };
 
-/**
- * Gets a single feedback by ID
- */
+// Gets a single feedback by ID
 export const getFeedbackById = async (
     feedbackId: string
 ): Promise<FeedbackWithLabels | null> => {
@@ -117,9 +111,7 @@ export const getFeedbackById = async (
     });
 };
 
-/**
- * Verifies that a feedback belongs to a user's project
- */
+// Verifies that a feedback belongs to a user's project
 export const verifyFeedbackOwnership = async (
     feedbackId: string,
     userId: string

@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginFormData } from '@/lib/validation';
 import { authApi, setToken } from '@/lib/api';
+import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oauth/google';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -67,66 +68,109 @@ export default function LoginPage() {
                     )}
 
                     {/* Form */}
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                        <div>
-                            <label htmlFor="email" className="input-label">
-                                Email address
-                            </label>
-                            <input
-                                {...register('email')}
-                                type="email"
-                                id="email"
-                                placeholder="you@example.com"
-                                className={`input-field ${errors.email ? 'input-error' : ''}`}
-                                disabled={isLoading}
-                            />
-                            {errors.email && (
-                                <p className="error-message">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                    </svg>
-                                    {errors.email.message}
-                                </p>
-                            )}
-                        </div>
+                    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                            <div>
+                                <label htmlFor="email" className="input-label">
+                                    Email address
+                                </label>
+                                <input
+                                    {...register('email')}
+                                    type="email"
+                                    id="email"
+                                    placeholder="you@example.com"
+                                    className={`input-field ${errors.email ? 'input-error' : ''}`}
+                                    disabled={isLoading}
+                                />
+                                {errors.email && (
+                                    <p className="error-message">
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                        {errors.email.message}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div>
-                            <label htmlFor="password" className="input-label">
-                                Password
-                            </label>
-                            <input
-                                {...register('password')}
-                                type="password"
-                                id="password"
-                                placeholder="••••••••"
-                                className={`input-field ${errors.password ? 'input-error' : ''}`}
-                                disabled={isLoading}
-                            />
-                            {errors.password && (
-                                <p className="error-message">
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                    </svg>
-                                    {errors.password.message}
-                                </p>
-                            )}
-                        </div>
+                            <div>
+                                <label htmlFor="password" className="input-label">
+                                    Password
+                                </label>
+                                <input
+                                    {...register('password')}
+                                    type="password"
+                                    id="password"
+                                    placeholder="••••••••"
+                                    className={`input-field ${errors.password ? 'input-error' : ''}`}
+                                    disabled={isLoading}
+                                />
+                                {errors.password && (
+                                    <p className="error-message">
+                                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                        </svg>
+                                        {errors.password.message}
+                                    </p>
+                                )}
+                            </div>
 
-                        <button
-                            type="submit"
-                            className="w-full btn-primary py-4"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <div className="w-5 h-5 spinner"></div>
-                                    Signing in...
-                                </span>
-                            ) : (
-                                'Sign In'
-                            )}
-                        </button>
-                    </form>
+                            <button
+                                type="submit"
+                                className="w-full btn-primary py-4"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <div className="w-5 h-5 spinner"></div>
+                                        Signing in...
+                                    </span>
+                                ) : (
+                                    'Sign In'
+                                )}
+                            </button>
+
+                            <div className="relative my-6">
+                                <div className="absolute inset-0 flex items-center">
+                                    <div className="w-full border-t border-gray-200"></div>
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="px-2 bg-white text-gray-500">Or</span>
+                                </div>
+                            </div>
+
+                            <div className="w-full">
+                                <GoogleLogin
+                                    onSuccess={async (credentialResponse: CredentialResponse) => {
+                                        if (credentialResponse.credential) {
+                                            setIsLoading(true);
+                                            try {
+                                                const response = await authApi.googleLogin(credentialResponse.credential);
+                                                if (response.success && response.data) {
+                                                    setToken(response.data.token);
+                                                    router.push('/dashboard');
+                                                } else {
+                                                    setError(response.error || 'Google login failed');
+                                                    setIsLoading(false);
+                                                }
+                                            } catch (err) {
+                                                console.error(err);
+                                                setError('An unexpected error occurred');
+                                                setIsLoading(false);
+                                            }
+                                        }
+                                    }}
+                                    onError={() => {
+                                        setError('Google Login Failed');
+                                    }}
+                                    theme="outline"
+                                    size="large"
+                                    width="100%" // This works when parent has defined width
+                                    text="continue_with"
+                                    shape="rectangular" // Changed to match the primary button shape better
+                                />
+                            </div>
+                        </form>
+                    </GoogleOAuthProvider>
 
                     {/* Footer */}
                     <p className="mt-8 text-center text-gray-600">
