@@ -25,7 +25,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   }
 
   const backendUrl = config.isProduction
-    ? process.env.BACKEND_URL || 'https://your-backend.onrender.com'
+    ? process.env.BACKEND_URL || 'https://feedbackpulse.onrender.com'
     : `http://localhost:${config.port}`;
 
   const widgetJs = `

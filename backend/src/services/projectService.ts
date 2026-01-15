@@ -13,9 +13,7 @@ export interface ProjectWithStats {
     feedbackCount: number;
 }
 
-/**
- * Creates a new project for a user
- */
+// Creates a new project for a user
 export const createProject = async (
     userId: string,
     input: CreateProjectInput
@@ -48,9 +46,7 @@ export const createProject = async (
     };
 };
 
-/**
- * Lists all projects for a user with feedback counts
- */
+// Lists all projects for a user with feedback counts
 export const listProjects = async (userId: string): Promise<ProjectWithStats[]> => {
     const projects = await prisma.project.findMany({
         where: { userId },
@@ -71,9 +67,7 @@ export const listProjects = async (userId: string): Promise<ProjectWithStats[]> 
     }));
 };
 
-/**
- * Gets a single project by ID (verifies ownership)
- */
+// Gets a single project by ID (verifies ownership)
 export const getProject = async (
     projectId: string,
     userId: string
@@ -101,21 +95,17 @@ export const getProject = async (
     };
 };
 
-/**
- * Gets project by projectKey (for public widget use)
- */
+// Gets project by projectKey (for public widget use)
 export const getProjectByKey = async (projectKey: string) => {
     return prisma.project.findUnique({
         where: { projectKey },
     });
 };
 
-/**
- * Generates the embed snippet for a project
- */
+// Generates the embed snippet for a project
 export const getEmbedSnippet = (projectKey: string): string => {
     const backendUrl = config.isProduction
-        ? process.env.BACKEND_URL || 'https://your-backend.onrender.com'
+        ? process.env.BACKEND_URL || 'https://feedbackpulse.onrender.com'
         : `http://localhost:${config.port}`;
 
     return `<script src="${backendUrl}/widget.js?key=${projectKey}" async></script>`;

@@ -5,10 +5,8 @@ import {
     feedbackQuerySchema,
 } from '../utils/validation';
 
-/**
- * POST /api/public/feedback
- * Submits feedback from the widget (public endpoint)
- */
+// POST /api/public/feedback
+// Submits feedback from the widget (public endpoint)
 export const submitFeedback = async (
     req: Request,
     res: Response,
@@ -42,10 +40,8 @@ export const submitFeedback = async (
     }
 };
 
-/**
- * GET /api/projects/:projectId/feedback
- * Gets paginated feedback for a project
- */
+// GET /api/projects/:projectId/feedback
+// Gets paginated feedback for a project
 export const getFeedback = async (
     req: Request,
     res: Response,
@@ -86,10 +82,8 @@ export const getFeedback = async (
     }
 };
 
-/**
- * POST /api/feedback/:feedbackId/sentiment
- * Analyzes sentiment using Gemini API
- */
+// POST /api/feedback/:feedbackId/sentiment
+// Analyzes sentiment using Gemini API
 export const analyzeSentiment = async (
     req: Request,
     res: Response,

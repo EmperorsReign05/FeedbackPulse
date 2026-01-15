@@ -1,16 +1,10 @@
 # Feedback Pulse API Documentation
 
-Base URL: `http://localhost:8080` (development) or your Render deployment URL (production)
-
+Base URL: `https://feedbackpulse.onrender.com`
 ## Authentication
 
 All protected endpoints require a JWT token in the Authorization header:
-
-```
 Authorization: Bearer <token>
-```
-
----
 
 ## Auth Endpoints
 
@@ -137,7 +131,7 @@ Authorization: Bearer <token>
     "projectKey": "fp_aBcDeFgHiJ",
     "createdAt": "2024-01-15T10:30:00.000Z",
     "feedbackCount": 0,
-    "embedSnippet": "<script src=\"http://localhost:8080/widget.js?key=fp_aBcDeFgHiJ\" async></script>"
+    "embedSnippet": "<script src=\"https://feedbackpulse.onrender.com/widget.js?key=fp_aBcDeFgHiJ\" async></script>"
   }
 }
 ```
@@ -190,7 +184,7 @@ Authorization: Bearer <token>
     "projectKey": "fp_aBcDeFgHiJ",
     "createdAt": "2024-01-15T10:30:00.000Z",
     "feedbackCount": 15,
-    "embedSnippet": "<script src=\"http://localhost:8080/widget.js?key=fp_aBcDeFgHiJ\" async></script>"
+    "embedSnippet": "<script src=\"https://feedbackpulse.onrender.com/widget.js?key=fp_aBcDeFgHiJ\" async></script>"
   }
 }
 ```

@@ -2,10 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { projectService } from '../services';
 import { createProjectSchema } from '../utils/validation';
 
-/**
- * POST /api/projects
- * Creates a new project
- */
+// POST /api/projects
+// Creates a new project
 export const createProject = async (
     req: Request,
     res: Response,
@@ -35,10 +33,8 @@ export const createProject = async (
     }
 };
 
-/**
- * GET /api/projects
- * Lists all projects for the current user
- */
+// GET /api/projects
+// Lists all projects for the current user
 export const listProjects = async (
     req: Request,
     res: Response,
@@ -64,10 +60,8 @@ export const listProjects = async (
     }
 };
 
-/**
- * GET /api/projects/:projectId
- * Gets a single project by ID
- */
+// GET /api/projects/:projectId
+// Gets a single project by ID
 export const getProject = async (
     req: Request,
     res: Response,

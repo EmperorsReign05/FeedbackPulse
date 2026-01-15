@@ -1,11 +1,9 @@
 import cors from 'cors';
 import config from '../config';
 
-/**
- * CORS configuration for different route types
- */
+//cors configuration
 
-// CORS for public routes (widget, public feedback submission)
+// CORS for public routes
 // Allows all origins for cross-domain widget usage
 export const publicCors = cors({
     origin: '*',
@@ -18,7 +16,7 @@ export const publicCors = cors({
 // Only allows requests from the frontend origin
 export const protectedCors = cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl)
+        // Allow requests with no origin 
         if (!origin) {
             callback(null, true);
             return;
@@ -29,6 +27,7 @@ export const protectedCors = cors({
             config.frontendUrl,
             'http://localhost:3000',
             'http://127.0.0.1:3000',
+            'https://feedback-pulse-murex.vercel.app',
         ];
 
         if (allowedOrigins.includes(origin) || config.nodeEnv === 'development') {

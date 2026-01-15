@@ -1,4 +1,4 @@
-# 🎯 Feedback Pulse
+# Feedback Pulse
 
 A modern SaaS application for collecting and managing user feedback with AI-powered sentiment analysis.
 
@@ -6,17 +6,17 @@ A modern SaaS application for collecting and managing user feedback with AI-powe
 ![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-green.svg)
 ![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)
 
-## 🚀 Features
+##  Features
 
-- **📝 Feedback Collection** - Embeddable widget for any website
-- **🤖 AI Sentiment Analysis** - Powered by Google Gemini API
-- **🏷️ Labels & Tags** - Organize feedback with custom labels
-- **🔍 Smart Filtering** - Filter by Bug, Feature, or Other
-- **📊 Dashboard** - Modern admin interface with pagination
-- **🔐 Secure Auth** - JWT-based authentication
-- **🌐 Cross-Domain** - Widget works on any domain with CORS support
+- **Feedback Collection** - Embeddable widget for any website
+- **AI Sentiment Analysis** - Powered by Google Gemini API
+- **Labels & Tags** - Organize feedback with custom labels
+- **Smart Filtering** - Filter by Bug, Feature, or Other
+- **Dashboard** - Modern admin interface with pagination
+- **Secure Auth** - JWT-based authentication
+- **Cross-Domain** - Widget works on any domain with CORS support
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 | Layer    | Technology                          |
 |----------|-------------------------------------|
@@ -29,7 +29,7 @@ A modern SaaS application for collecting and managing user feedback with AI-powe
 | AI       | Google Gemini API                   |
 | Deploy   | Vercel (Frontend), Render (Backend) |
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 feedback-pulse/
@@ -61,7 +61,7 @@ feedback-pulse/
 └── README.md
 ```
 
-## 🏁 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -132,46 +132,46 @@ Frontend will run at `http://localhost:3000`
 5. Enter your project key and click "Load Widget"
 6. Submit test feedback!
 
-## 📡 API Endpoints
+##  API Endpoints
 
 ### Authentication
-| Method | Endpoint           | Description          |
+| Method | Endpoint          | Description          |
 |--------|-------------------|----------------------|
 | POST   | /api/auth/signup  | Register new user    |
 | POST   | /api/auth/login   | Login user           |
 | GET    | /api/auth/me      | Get current user     |
 
 ### Projects
-| Method | Endpoint              | Description          |
+| Method | Endpoint             | Description          |
 |--------|----------------------|----------------------|
 | POST   | /api/projects        | Create project       |
 | GET    | /api/projects        | List projects        |
 | GET    | /api/projects/:id    | Get project details  |
 
 ### Feedback
-| Method | Endpoint                              | Description            |
+| Method | Endpoint                             | Description            |
 |--------|--------------------------------------|------------------------|
 | GET    | /api/projects/:id/feedback           | List feedback (paginated)|
 | POST   | /api/public/feedback                 | Submit feedback (public)|
 | POST   | /api/feedback/:id/sentiment          | Analyze sentiment      |
 
 ### Labels
-| Method | Endpoint                              | Description          |
+| Method | Endpoint                             | Description          |
 |--------|--------------------------------------|----------------------|
 | POST   | /api/feedback/:id/labels             | Add label            |
 | DELETE | /api/feedback/:id/labels/:labelId    | Remove label         |
 
 ### Widget
-| Method | Endpoint              | Description          |
+| Method | Endpoint             | Description          |
 |--------|----------------------|----------------------|
 | GET    | /widget.js?key=xxx   | Get widget script    |
 
 ### Health
-| Method | Endpoint    | Description          |
+| Method | Endpoint   | Description          |
 |--------|------------|----------------------|
 | GET    | /health    | Health check         |
 
-## 🔧 Widget Integration
+## Widget Integration
 
 Add this script tag to any website:
 
@@ -188,7 +188,7 @@ The widget will automatically:
 - Submit feedback to your backend
 - Work on any domain (CORS enabled)
 
-## 🌐 Deployment
+##  Deployment
 
 ### Backend (Render)
 
@@ -240,7 +240,7 @@ The widget will automatically:
 - [x] Code is clean with required layering
 - [x] Deployment-ready (Vercel + Render)
 
-## 📝 Environment Variables
+## Environment Variables
 
 ### Backend (.env)
 ```env
@@ -258,14 +258,8 @@ NODE_ENV="development"
 NEXT_PUBLIC_API_BASE_URL="http://localhost:8080"
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
+## License
 
 This project is licensed under the MIT License.
 
----
 
-Built with ❤️ for collecting better feedback

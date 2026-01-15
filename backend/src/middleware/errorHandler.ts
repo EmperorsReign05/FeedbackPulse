@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
 
-/**
- * Global error handler middleware
- */
+// Global error handler middleware
 export const errorHandler = (
     err: Error,
     req: Request,
@@ -41,9 +39,7 @@ export const errorHandler = (
     });
 };
 
-/**
- * 404 Not Found handler
- */
+// 404 Not Found handler
 export const notFoundHandler = (req: Request, res: Response): void => {
     res.status(404).json({
         success: false,

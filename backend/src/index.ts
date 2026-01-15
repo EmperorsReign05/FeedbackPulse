@@ -29,6 +29,11 @@ app.get('/health', (req, res) => {
     });
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+    res.send('Feedback Pulse API is running ');
+})
+
 // Widget routes (public CORS - allows all origins)
 app.use('/widget.js', publicCors, widgetRoutes);
 
@@ -51,11 +56,11 @@ app.listen(PORT, () => {
     console.log(`
 ╔════════════════════════════════════════════════════════════════╗
 ║                                                                ║
-║   ⚡ Feedback Pulse Backend Server                             ║
+║   Feedback Pulse Backend Server                                ║
 ║                                                                ║
-║   🚀 Server running on: http://localhost:${PORT}                 ║
-║   📊 Environment: ${config.nodeEnv.padEnd(41)}║
-║   ✨ Health check: http://localhost:${PORT}/health               ║
+║   Server running on: http://localhost:${PORT}                  ║
+║   Environment: ${config.nodeEnv.padEnd(41)}                    ║
+║   Health check: http://localhost:${PORT}/health                ║
 ║                                                                ║
 ╚════════════════════════════════════════════════════════════════╝
   `);

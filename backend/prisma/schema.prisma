@@ -20,7 +20,7 @@ model User {
   @@map("users")
 }
 
-// Project model - each user can have multiple projects
+// Project model - for multiple projects
 model Project {
   id         String     @id @default(cuid())
   userId     String
@@ -49,7 +49,7 @@ enum Sentiment {
   negative
 }
 
-// Feedback model - stores all feedback submissions
+// Feedback model - stores submissions
 model Feedback {
   id        String        @id @default(cuid())
   projectId String
