@@ -15,12 +15,12 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-black selection:text-white">
-            {/* Main Hero Wrapper - Full Screen Green */}
+            {/* Main Hero Wrapper*/}
             <div className="bg-primary-500 min-h-[90vh] relative overflow-hidden flex flex-col pt-20">
-                {/* Navbar - Floating style */}
+                {/* Navbar*/}
                 <nav className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6">
                     <div className="max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg shadow-black/5 border border-white/20">
-                        {/* Logo */}
+                        {/* Left Side: Logo */}
                         <Link href="/" className="flex items-center gap-2 group">
                             <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,30 +30,49 @@ export default function HomePage() {
                             <span className="font-display font-bold text-xl tracking-tight text-gray-900">FeedbackPulse</span>
                         </Link>
 
-                        {/* Desktop Links */}
-                        <div className="hidden md:flex items-center gap-8 font-medium text-gray-600 text-sm">
-                            <Link href="#features" className="hover:text-black transition-colors">Features</Link>
-                            <Link href="#how-it-works" className="hover:text-black transition-colors">How it works</Link>
-                            <Link href="#pricing" className="hover:text-black transition-colors">Pricing</Link>
-                        </div>
+                        {/* Right Side: Links + Auth */}
+                        <div className="flex items-center gap-6">
+                            {/* Desktop Links */}
+                            <div className="hidden md:flex items-center gap-6 font-medium text-gray-600 text-sm">
+                                <Link href="/#features" className="hover:text-black transition-colors">Features</Link>
+                                <Link href="/#how-it-works" className="hover:text-black transition-colors">How it works</Link>
+                            </div>
 
-                        {/* Auth Buttons */}
-                        <div className="flex items-center gap-3">
-                            {mounted && isLoggedIn ? (
-                                <Link href="/dashboard" className="px-5 py-2 bg-black text-white font-medium rounded-full hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 text-sm">
-                                    Dashboard
-                                </Link>
-                            ) : (
-                                <>
-                                    <Link href="/login" className="hidden sm:block px-4 py-2 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors text-sm">
-                                        Log in
-                                    </Link>
-                                    <Link href="/signup" className="px-5 py-2 bg-black text-white font-medium rounded-full hover:bg-gray-800 transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm flex items-center gap-2">
-                                        Get Started
-                                        <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-[10px]">➜</span>
-                                    </Link>
-                                </>
-                            )}
+                            {/* Separator */}
+                            <div className="hidden md:block w-px h-6 bg-gray-200"></div>
+
+                            {/* Auth Buttons */}
+                            <div className="flex items-center gap-3">
+                                {mounted && isLoggedIn ? (
+                                    <>
+                                        <button
+                                            onClick={() => {
+                                                if (confirm('Are you sure you want to logout?')) {
+                                                    const Cookies = require('js-cookie');
+                                                    Cookies.remove('feedback_pulse_token');
+                                                    window.location.reload();
+                                                }
+                                            }}
+                                            className="hidden sm:block px-4 py-2 text-gray-600 font-medium hover:text-red-600 hover:bg-red-50 rounded-full transition-colors text-sm"
+                                        >
+                                            Log out
+                                        </button>
+                                        <Link href="/dashboard" className="px-5 py-2 bg-black text-white font-medium rounded-full hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 text-sm">
+                                            Dashboard
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link href="/login" className="hidden sm:block px-4 py-2 text-gray-900 font-medium hover:bg-gray-100 rounded-full transition-colors text-sm">
+                                            Log in
+                                        </Link>
+                                        <Link href="/signup" className="px-5 py-2 bg-black text-white font-medium rounded-full hover:bg-gray-800 transition-all hover:shadow-lg hover:-translate-y-0.5 text-sm flex items-center gap-2">
+                                            Get Started
+                                            <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-[10px]">➜</span>
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </nav>
@@ -110,7 +129,7 @@ export default function HomePage() {
                                 </div>
                                 <h3 className="font-display font-bold text-3xl text-gray-900 mb-4">Sentiment Analysis</h3>
                                 <p className="text-gray-600 text-lg max-w-md">
-                                    Our Gemini-powered AI automatically reads every piece of feedback and categorizes it by sentiment. Stop guessing how your users feel.
+                                    AI automatically reads every piece of feedback and categorizes it by sentiment. Stop guessing how your users feel.
                                 </p>
                             </div>
                             <div className="absolute right-0 bottom-0 w-64 h-64 bg-primary-200 rounded-tl-[4rem] opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
@@ -175,6 +194,65 @@ export default function HomePage() {
                 </div>
             </div>
 
+
+
+            {/* How it Works Section */}
+            <section id="how-it-works" className="py-24 px-4 bg-black text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-900/30 blur-[120px] rounded-full pointer-events-none"></div>
+                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary-900/20 blur-[120px] rounded-full pointer-events-none"></div>
+
+                <div className="max-w-7xl mx-auto relative z-10">
+                    <div className="text-center mb-16">
+                        <span className="text-primary-400 font-bold uppercase tracking-wider text-sm mb-2 block">Simple Integration</span>
+                        <h2 className="font-display font-bold text-4xl md:text-6xl tracking-tight mb-6">
+                            Up and running in minutes.
+                        </h2>
+                        <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                            We built FeedbackPulse to be the easiest feedback tool you've ever used. No complex configurations, no bloat.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+                        {/* Step 1 */}
+                        <div className="relative group">
+                            <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
+                                <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">01</div>
+                                <h3 className="text-2xl font-bold mb-4 text-white">Create Project</h3>
+                                <p className="text-gray-400">
+                                    Sign up for an account and create your first project to get your unique API key.
+                                </p>
+                            </div>
+                            {/* Connector Line (Desktop) */}
+                            <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-[1px] bg-gradient-to-r from-gray-800 to-transparent"></div>
+                        </div>
+
+                        {/* Step 2 */}
+                        <div className="relative group">
+                            <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
+                                <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">02</div>
+                                <h3 className="text-2xl font-bold mb-4 text-white">Embed Script</h3>
+                                <p className="text-gray-400">
+                                    Copy the generated one-line script tag and paste it into your website's HTML head or body.
+                                </p>
+                            </div>
+                            {/* Connector Line (Desktop) */}
+                            <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-[1px] bg-gradient-to-r from-gray-800 to-transparent"></div>
+                        </div>
+
+                        {/* Step 3 */}
+                        <div className="relative group">
+                            <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
+                                <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">03</div>
+                                <h3 className="text-2xl font-bold mb-4 text-white">Collect & Analyze</h3>
+                                <p className="text-gray-400">
+                                    Watch feedback stream into your dashboard. Let AI handle the sentiment analysis for you.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* CTA Section */}
             <section className="py-24 px-4 bg-white">
                 <div className="max-w-4xl mx-auto text-center relative">
@@ -201,9 +279,9 @@ export default function HomePage() {
                         <span className="font-bold text-gray-900">FeedbackPulse</span>
                     </div>
                     <div className="flex gap-8 text-gray-500 font-medium">
-                        <Link href="#" className="hover:text-black">Privacy</Link>
-                        <Link href="#" className="hover:text-black">Terms</Link>
-                        <Link href="#" className="hover:text-black">Twitter</Link>
+                        <Link href="/privacy" className="hover:text-black">Privacy</Link>
+                        <Link href="/terms" className="hover:text-black">Terms</Link>
+                        <Link href="https://x.com/home" target="_blank" className="hover:text-black">Twitter</Link>
                     </div>
                     <p className="text-gray-400 text-sm">
                         © {new Date().getFullYear()} Feedback Pulse.
@@ -217,6 +295,6 @@ export default function HomePage() {
                     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
                 }
             `}</style>
-        </div>
+        </div >
     );
 }
