@@ -14,7 +14,7 @@ export const generateToken = (payload: TokenPayload): string => {
 
 export const verifyToken = (token: string): TokenPayload | null => {
     try {
-        const decoded = jwt.verify(token, config.jwtSecret) as JwtPayload & TokenPayload;
+        const decoded = jwt.verify(token, config.jwtSecret) as unknown as TokenPayload;
         return {
             userId: decoded.userId,
             email: decoded.email,
