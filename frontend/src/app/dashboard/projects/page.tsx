@@ -137,7 +137,7 @@ export default function ProjectsPage() {
                             {/* Delete Button */}
                             <button
                                 onClick={(e) => handleDeleteClick(e, project)}
-                                className="absolute top-4 right-4 p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all duration-200"
+                                className="absolute top-14 right-6 p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all duration-200"
                                 title="Delete project"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
