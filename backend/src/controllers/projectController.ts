@@ -98,3 +98,39 @@ export const getProject = async (
         next(error);
     }
 };
+
+// DELETE /api/projects/:projectId
+// Deletes a project by ID
+export const deleteProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({
+                success: false,
+                error: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { projectId } = req.params;
+        const deleted = await projectService.deleteProject(projectId, req.user.userId);
+
+        if (!deleted) {
+            res.status(404).json({
+                success: false,
+                error: 'Project not found or unauthorized',
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            message: 'Project deleted successfully',
+        });
+    } catch (error) {
+        next(error);
+    }
+};

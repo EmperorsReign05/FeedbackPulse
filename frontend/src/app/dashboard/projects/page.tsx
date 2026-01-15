@@ -8,6 +8,11 @@ import { formatDate } from '@/lib/utils';
 export default function ProjectsPage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; project: Project | null }>({
+        isOpen: false,
+        project: null,
+    });
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         loadProjects();
@@ -20,6 +25,29 @@ export default function ProjectsPage() {
             setProjects(response.data);
         }
         setIsLoading(false);
+    };
+
+    const handleDeleteClick = (e: React.MouseEvent, project: Project) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDeleteModal({ isOpen: true, project });
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!deleteModal.project) return;
+
+        setIsDeleting(true);
+        const response = await projectsApi.delete(deleteModal.project.id);
+
+        if (response.success) {
+            setProjects(projects.filter(p => p.id !== deleteModal.project?.id));
+            setDeleteModal({ isOpen: false, project: null });
+        }
+        setIsDeleting(false);
+    };
+
+    const handleDeleteCancel = () => {
+        setDeleteModal({ isOpen: false, project: null });
     };
 
     return (
@@ -67,41 +95,56 @@ export default function ProjectsPage() {
             ) : (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {projects.map((project) => (
-                        <Link
+                        <div
                             key={project.id}
-                            href={`/dashboard/projects/${project.id}`}
-                            className="card p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+                            className="card p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 relative group"
                         >
-                            <div className="flex items-start justify-between mb-4">
-                                <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-accent-100 rounded-2xl flex items-center justify-center">
-                                    <span className="text-2xl font-bold gradient-text">
-                                        {project.name.charAt(0).toUpperCase()}
+                            <Link
+                                href={`/dashboard/projects/${project.id}`}
+                                className="block"
+                            >
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="w-14 h-14 bg-gradient-to-br from-primary-100 to-accent-100 rounded-2xl flex items-center justify-center">
+                                        <span className="text-2xl font-bold gradient-text">
+                                            {project.name.charAt(0).toUpperCase()}
+                                        </span>
+                                    </div>
+                                    <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+                                        </svg>
+                                        {project.feedbackCount}
                                     </span>
                                 </div>
-                                <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-lg">
-                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
-                                    </svg>
-                                    {project.feedbackCount}
-                                </span>
-                            </div>
 
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
-                                {project.name}
-                            </h3>
-                            <p className="text-sm text-gray-500 mb-4">
-                                Created {formatDate(project.createdAt)}
-                            </p>
+                                <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
+                                    {project.name}
+                                </h3>
+                                <p className="text-sm text-gray-500 mb-4">
+                                    Created {formatDate(project.createdAt)}
+                                </p>
 
-                            <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                                <code className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-mono">
-                                    {project.projectKey}
-                                </code>
-                                <span className="text-primary-600 font-medium text-sm">
-                                    View →
-                                </span>
-                            </div>
-                        </Link>
+                                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <code className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded font-mono">
+                                        {project.projectKey}
+                                    </code>
+                                    <span className="text-primary-600 font-medium text-sm">
+                                        View →
+                                    </span>
+                                </div>
+                            </Link>
+
+                            {/* Delete Button */}
+                            <button
+                                onClick={(e) => handleDeleteClick(e, project)}
+                                className="absolute top-4 right-4 p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all duration-200"
+                                title="Delete project"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
                     ))}
 
                     {/* Add New Project Card */}
@@ -118,6 +161,50 @@ export default function ProjectsPage() {
                     </Link>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            {deleteModal.isOpen && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-slide-up">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold text-gray-900 text-center mb-2">
+                            Delete Project
+                        </h3>
+                        <p className="text-gray-500 text-center mb-6">
+                            Are you sure you want to delete <span className="font-medium text-gray-900">&quot;{deleteModal.project?.name}&quot;</span>?
+                            This will permanently delete all associated feedback. This action cannot be undone.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleDeleteCancel}
+                                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors"
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleDeleteConfirm}
+                                className="flex-1 px-4 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50"
+                                disabled={isDeleting}
+                            >
+                                {isDeleting ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                        Deleting...
+                                    </span>
+                                ) : (
+                                    'Delete Project'
+                                )}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
+

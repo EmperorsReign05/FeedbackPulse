@@ -102,6 +102,31 @@ export const getProjectByKey = async (projectKey: string) => {
     });
 };
 
+// Deletes a project (verifies ownership) - cascades to feedback
+export const deleteProject = async (
+    projectId: string,
+    userId: string
+): Promise<boolean> => {
+    // First verify ownership
+    const project = await prisma.project.findFirst({
+        where: {
+            id: projectId,
+            userId,
+        },
+    });
+
+    if (!project) {
+        return false;
+    }
+
+    // Delete the project (feedback will cascade delete per schema)
+    await prisma.project.delete({
+        where: { id: projectId },
+    });
+
+    return true;
+};
+
 // Generates the embed snippet for a project
 export const getEmbedSnippet = (projectKey: string): string => {
     const backendUrl = config.isProduction
@@ -110,3 +135,4 @@ export const getEmbedSnippet = (projectKey: string): string => {
 
     return `<script src="${backendUrl}/widget.js?key=${projectKey}" async></script>`;
 };
+

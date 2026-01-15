@@ -11,6 +11,7 @@ router.use(requireAuth);
 router.post('/', projectController.createProject);
 router.get('/', projectController.listProjects);
 router.get('/:projectId', projectController.getProject);
+router.delete('/:projectId', projectController.deleteProject);
 
 // Feedback for a project
 router.get('/:projectId/feedback', feedbackController.getFeedback);

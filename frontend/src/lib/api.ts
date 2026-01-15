@@ -151,6 +151,11 @@ export const projectsApi = {
             method: 'POST',
             body: JSON.stringify({ name }),
         }),
+
+    delete: (projectId: string) =>
+        apiRequest<void>(`/api/projects/${projectId}`, {
+            method: 'DELETE',
+        }),
 };
 
 // Feedback API
