@@ -14,9 +14,9 @@ export default function HomePage() {
     }, []);
 
     return (
-        <div className="min-h-screen font-sans selection:bg-black selection:text-white">
+        <div className="min-h-screen font-sans selection:bg-black selection:text-white overflow-x-hidden">
             {/* Main Hero Wrapper*/}
-            <div className="bg-primary-500 min-h-[90vh] relative overflow-hidden flex flex-col pt-20">
+            <div className="bg-primary-500 min-h-screen relative overflow-hidden flex flex-col pt-20">
                 {/* Navbar*/}
                 <nav className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6">
                     <div className="max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg shadow-black/5 border border-white/20">
