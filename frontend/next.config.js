@@ -1,16 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     reactStrictMode: true,
-    // Enable experimental features for server components
-    experimental: {
-        serverActions: true,
-    },
-    // Environment variables that will be available in the browser
-    env: {
-        NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
-    },
-    // Configure headers for Google OAuth compatibility
+    //headers for Google auth compatibility and security
     async headers() {
         return [
             {
@@ -20,10 +11,34 @@ const nextConfig = {
                         key: 'Cross-Origin-Opener-Policy',
                         value: 'same-origin-allow-popups',
                     },
+                    {
+                        key: 'X-Content-Type-Options',
+                        value: 'nosniff',
+                    },
+                    {
+                        key: 'X-Frame-Options',
+                        value: 'DENY',
+                    },
+                    {
+                        key: 'X-XSS-Protection',
+                        value: '1; mode=block',
+                    },
+                    {
+                        key: 'Referrer-Policy',
+                        value: 'strict-origin-when-cross-origin',
+                    },
                 ],
             },
         ];
     },
+    // Image optimization configuration
+    images: {
+        domains: [],
+        unoptimized: false,
+    },
+    // Production optimizations
+    poweredByHeader: false,
+    compress: true,
 };
 
 module.exports = nextConfig;

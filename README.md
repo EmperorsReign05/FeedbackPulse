@@ -66,7 +66,7 @@ feedback-pulse/
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database (we recommend [Neon](https://neon.tech))
+- PostgreSQL database (I recommend [Neon](https://neon.tech))
 - Google Gemini API key (for sentiment analysis)
 
 ### 1. Clone the Repository
@@ -199,8 +199,9 @@ The widget will automatically:
 5. Start command: `npm start`
 6. Add environment variables:
    - `DATABASE_URL`
-   - `JWT_SECRET`
+   - `JWT_SECRET` (use a strong random string)
    - `GEMINI_API_KEY`
+   - `GOOGLE_CLIENT_ID` (for Google Sign-in)
    - `FRONTEND_URL` (your Vercel URL)
    - `BACKEND_URL` (your Render URL)
    - `NODE_ENV=production`
@@ -210,8 +211,10 @@ The widget will automatically:
 1. Import project on Vercel
 2. Set root directory to `frontend`
 3. Framework: Next.js (auto-detected)
-4. Add environment variable:
+4. Add environment variables:
    - `NEXT_PUBLIC_API_BASE_URL` (your Render backend URL)
+   - `NEXT_PUBLIC_APP_URL` (your Vercel app URL)
+   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (for Google Sign-in)
 
 ## 📖 Documentation
 
@@ -221,14 +224,15 @@ The widget will automatically:
 
 ## 🔗 Live Demo
 
-- **Frontend**: [https://feedback-pulse.vercel.app](https://feedback-pulse.vercel.app) *(placeholder)*
-- **Backend**: [https://feedback-pulse-api.onrender.com](https://feedback-pulse-api.onrender.com) *(placeholder)*
-- **Demo Video**: [Loom Recording](https://loom.com/share/xxx) *(placeholder)*
+- **Frontend**: [https://feedback-pulse-murex.vercel.app](https://feedback-pulse-murex.vercel.app)
+- **Backend**: [https://feedbackpulse.onrender.com](https://feedbackpulse.onrender.com)
 
 ## ✅ Definition of Done
 
 - [x] User can sign up and login
+- [x] Google OAuth sign-in support
 - [x] User can create project and see projectKey + embed snippet
+- [x] User can delete projects
 - [x] Widget script loads on any domain and submits feedback
 - [x] Admin dashboard lists projects
 - [x] Admin can view feedback by project
@@ -240,26 +244,36 @@ The widget will automatically:
 - [x] Code is clean with required layering
 - [x] Deployment-ready (Vercel + Render)
 
+## 🔒 Production Security Features
+
+- **Helmet.js** - Security headers (XSS, CSRF, clickjacking protection)
+- **Rate Limiting** - Prevents API abuse and brute force attacks
+- **Input Validation** - Zod schemas on all inputs
+- **JWT Authentication** - Secure token-based auth with 7-day expiry
+- **CORS Protection** - Restricted origins for protected routes
+- **Request Size Limits** - Prevents payload attacks
+
 ## Environment Variables
 
 ### Backend (.env)
 ```env
 PORT=8080
 DATABASE_URL="postgresql://..."
-JWT_SECRET="your-secret-key"
+JWT_SECRET="your-strong-secret-key"
 FRONTEND_URL="http://localhost:3000"
 BACKEND_URL="http://localhost:8080"
 GEMINI_API_KEY="your-gemini-api-key"
+GOOGLE_CLIENT_ID="your-google-client-id"
 NODE_ENV="development"
 ```
 
 ### Frontend (.env.local)
 ```env
 NEXT_PUBLIC_API_BASE_URL="http://localhost:8080"
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id"
 ```
 
 ## License
 
 This project is licensed under the MIT License.
-
-
