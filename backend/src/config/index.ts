@@ -31,7 +31,8 @@ export const config = {
 
     // URLs
     frontendUrl: process.env.FRONTEND_URL || 'https://feedback-pulse-murex.vercel.app',
-    backendUrl: process.env.BACKEND_URL || 'http://localhost:8080',
+
+    backendUrl: process.env.BACKEND_URL || process.env.RENDER_EXTERNAL_URL || 'http://localhost:8080',
 
     // External APIs
     geminiApiKey: process.env.GEMINI_API_KEY,

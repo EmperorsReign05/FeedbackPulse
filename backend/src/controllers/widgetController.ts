@@ -35,7 +35,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   window.__feedbackPulseLoaded = true;
 
   const PROJECT_KEY = '${projectKey}';
-  const API_URL = '${backendUrl}/api/public/feedback';
+  const API_URL = '${backendUrl}/api/public/report';
 
   // Styles
   const styles = \`
