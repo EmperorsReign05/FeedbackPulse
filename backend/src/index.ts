@@ -68,14 +68,16 @@ const feedbackLimiter = rateLimit({
 app.use(express.json({ limit: '10kb' })); // Limit body size
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
-// Health check endpoint (no rate limiting)
 app.get('/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        environment: config.nodeEnv,
-        version: '1.0.0',
+    res.set({
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-store',
+        'Content-Encoding': 'identity',
+        'X-Content-Type-Options': 'nosniff',
     });
+
+    // Send minimal "ok" response (2 bytes)
+    res.status(200).send('ok');
 });
 
 // Root endpoint
