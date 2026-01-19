@@ -150,14 +150,16 @@ export default function FeedbackPage() {
                 <button
                     onClick={() => {
                         if (!feedback.length) return;
-                        const headers = ['ID', 'Type', 'Message', 'Sentiment', 'Date', 'Time'];
+                        const headers = ['ID', 'Type', 'Message', 'Sentiment', 'Labels', 'Date', 'Time'];
                         const rows = feedback.map(f => {
                             const dateObj = new Date(f.createdAt);
+                            const labelsStr = (f.labels || []).map(l => l.label).join(', ');
                             return [
                                 f.id,
                                 f.type,
                                 `"${f.message.replace(/"/g, '""')}"`,
                                 f.sentiment || '',
+                                labelsStr ? `"${labelsStr.replace(/"/g, '""')}"` : '',
                                 dateObj.toLocaleDateString(),
                                 dateObj.toLocaleTimeString()
                             ];
