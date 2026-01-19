@@ -11,6 +11,13 @@ export interface ProjectWithStats {
     projectKey: string;
     createdAt: Date;
     feedbackCount: number;
+    // Widget customization
+    widgetIcon: string;
+    widgetText: string;
+    widgetPrimary: string;
+    widgetTextColor: string;
+    widgetBackground: string;
+    widgetPosition: string;
 }
 
 // Creates a new project for a user
@@ -37,6 +44,12 @@ export const createProject = async (
             userId,
             name: input.name,
             projectKey,
+            widgetIcon: input.widgetIcon,
+            widgetText: input.widgetText,
+            widgetPrimary: input.widgetPrimary,
+            widgetTextColor: input.widgetTextColor,
+            widgetBackground: input.widgetBackground,
+            widgetPosition: input.widgetPosition,
         },
     });
 
@@ -64,6 +77,12 @@ export const listProjects = async (userId: string): Promise<ProjectWithStats[]> 
         projectKey: project.projectKey,
         createdAt: project.createdAt,
         feedbackCount: project._count.feedback,
+        widgetIcon: project.widgetIcon,
+        widgetText: project.widgetText,
+        widgetPrimary: project.widgetPrimary,
+        widgetTextColor: project.widgetTextColor,
+        widgetBackground: project.widgetBackground,
+        widgetPosition: project.widgetPosition,
     }));
 };
 
@@ -92,6 +111,12 @@ export const getProject = async (
         projectKey: project.projectKey,
         createdAt: project.createdAt,
         feedbackCount: project._count.feedback,
+        widgetIcon: project.widgetIcon,
+        widgetText: project.widgetText,
+        widgetPrimary: project.widgetPrimary,
+        widgetTextColor: project.widgetTextColor,
+        widgetBackground: project.widgetBackground,
+        widgetPosition: project.widgetPosition,
     };
 };
 
@@ -127,11 +152,35 @@ export const deleteProject = async (
     return true;
 };
 
+// Widget settings interface for embed snippet
+export interface WidgetSettings {
+    widgetIcon: string;
+    widgetText: string;
+    widgetPrimary: string;
+    widgetTextColor: string;
+    widgetBackground: string;
+    widgetPosition: string;
+}
+
 // Generates the embed snippet for a project
-export const getEmbedSnippet = (projectKey: string): string => {
+export const getEmbedSnippet = (projectKey: string, settings?: WidgetSettings): string => {
     const backendUrl = config.isProduction
         ? process.env.BACKEND_URL || 'https://feedbackpulse.onrender.com'
         : `http://localhost:${config.port}`;
+
+    // If settings provided, include them as query params for the widget
+    if (settings) {
+        const params = new URLSearchParams({
+            key: projectKey,
+            icon: settings.widgetIcon,
+            text: settings.widgetText,
+            primary: settings.widgetPrimary,
+            textColor: settings.widgetTextColor,
+            bg: settings.widgetBackground,
+            pos: settings.widgetPosition,
+        });
+        return `<script src="${backendUrl}/widget.js?${params.toString()}" async></script>`;
+    }
 
     return `<script src="${backendUrl}/widget.js?key=${projectKey}" async></script>`;
 };

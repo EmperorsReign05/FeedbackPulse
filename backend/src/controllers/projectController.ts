@@ -25,7 +25,14 @@ export const createProject = async (
             success: true,
             data: {
                 ...project,
-                embedSnippet: projectService.getEmbedSnippet(project.projectKey),
+                embedSnippet: projectService.getEmbedSnippet(project.projectKey, {
+                    widgetIcon: project.widgetIcon,
+                    widgetText: project.widgetText,
+                    widgetPrimary: project.widgetPrimary,
+                    widgetTextColor: project.widgetTextColor,
+                    widgetBackground: project.widgetBackground,
+                    widgetPosition: project.widgetPosition,
+                }),
             },
         });
     } catch (error) {
@@ -91,7 +98,14 @@ export const getProject = async (
             success: true,
             data: {
                 ...project,
-                embedSnippet: projectService.getEmbedSnippet(project.projectKey),
+                embedSnippet: projectService.getEmbedSnippet(project.projectKey, {
+                    widgetIcon: project.widgetIcon,
+                    widgetText: project.widgetText,
+                    widgetPrimary: project.widgetPrimary,
+                    widgetTextColor: project.widgetTextColor,
+                    widgetBackground: project.widgetBackground,
+                    widgetPosition: project.widgetPosition,
+                }),
             },
         });
     } catch (error) {

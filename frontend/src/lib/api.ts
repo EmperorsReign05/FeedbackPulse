@@ -29,6 +29,23 @@ export interface Project {
     createdAt: string;
     feedbackCount: number;
     embedSnippet?: string;
+    // Widget customization
+    widgetIcon: string;
+    widgetText: string;
+    widgetPrimary: string;
+    widgetTextColor: string;
+    widgetBackground: string;
+    widgetPosition: string;
+}
+
+// Widget settings for creating/updating projects
+export interface WidgetSettings {
+    widgetIcon?: string;
+    widgetText?: string;
+    widgetPrimary?: string;
+    widgetTextColor?: string;
+    widgetBackground?: string;
+    widgetPosition?: string;
 }
 
 export interface Label {
@@ -146,10 +163,13 @@ export const projectsApi = {
     get: (projectId: string) =>
         apiRequest<Project>(`/api/projects/${projectId}`),
 
-    create: (name: string) =>
+    create: (name: string, widgetSettings?: WidgetSettings) =>
         apiRequest<Project>('/api/projects', {
             method: 'POST',
-            body: JSON.stringify({ name }),
+            body: JSON.stringify({
+                name,
+                ...(widgetSettings || {}),
+            }),
         }),
 
     delete: (projectId: string) =>

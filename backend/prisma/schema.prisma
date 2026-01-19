@@ -27,6 +27,14 @@ model Project {
   feedback   Feedback[]
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Widget customization fields
+  widgetIcon       String   @default("chat")      // chat, mail, question, star, settings, thumbsUp, envelope, info
+  widgetText       String   @default("Feedback")  // Launcher button text
+  widgetPrimary    String   @default("#2563EB")   // Primary color
+  widgetTextColor  String   @default("#FFFFFF")   // Text color
+  widgetBackground String   @default("#FFFFFF")   // Background color
+  widgetPosition   String   @default("bottom-right") // top-left, top-right, bottom-left, bottom-right
+
   @@index([userId])
   @@index([projectKey])
   @@map("projects")
