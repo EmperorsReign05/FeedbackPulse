@@ -143,3 +143,47 @@ export const analyzeSentiment = async (
         next(error);
     }
 };
+
+// DELETE /api/feedback/:feedbackId
+// Deletes a feedback item
+export const deleteFeedback = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({
+                success: false,
+                error: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { feedbackId } = req.params;
+
+        // Verify ownership
+        const hasAccess = await feedbackService.verifyFeedbackOwnership(
+            feedbackId,
+            req.user.userId
+        );
+
+        if (!hasAccess) {
+            res.status(404).json({
+                success: false,
+                error: 'Feedback not found',
+            });
+            return;
+        }
+
+        // Delete the feedback
+        await feedbackService.deleteFeedback(feedbackId);
+
+        res.json({
+            success: true,
+            data: { deleted: true },
+        });
+    } catch (error) {
+        next(error);
+    }
+};

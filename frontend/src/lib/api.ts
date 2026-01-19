@@ -190,6 +190,11 @@ export const feedbackApi = {
             `/api/feedback/${feedbackId}/sentiment`,
             { method: 'POST' }
         ),
+
+    delete: (feedbackId: string) =>
+        apiRequest<void>(`/api/feedback/${feedbackId}`, {
+            method: 'DELETE',
+        }),
 };
 
 // Labels API

@@ -149,3 +149,16 @@ export const updateSentiment = async (
         },
     });
 };
+
+// Deletes a feedback by ID (also deletes associated labels via cascade)
+export const deleteFeedback = async (feedbackId: string): Promise<void> => {
+    // First delete associated labels
+    await prisma.feedbackLabel.deleteMany({
+        where: { feedbackId },
+    });
+
+    // Then delete the feedback
+    await prisma.feedback.delete({
+        where: { id: feedbackId },
+    });
+};

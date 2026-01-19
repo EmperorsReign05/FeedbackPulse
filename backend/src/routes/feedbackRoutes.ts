@@ -10,6 +10,9 @@ router.use(requireAuth);
 // Sentiment analysis
 router.post('/:feedbackId/sentiment', feedbackController.analyzeSentiment);
 
+// Delete feedback
+router.delete('/:feedbackId', feedbackController.deleteFeedback);
+
 // Label management
 router.get('/:feedbackId/labels', labelController.getLabels);
 router.post('/:feedbackId/labels', labelController.addLabel);
