@@ -239,12 +239,12 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
       color: #334155;
     }
     #fp-widget-submit {
-      background: #0f172a;
-      color: #fff;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      background: \${CONFIG.primaryColor};
+      color: \${CONFIG.textColor};
+      box-shadow: 0 4px 6px -1px \${CONFIG.primaryShadow};
     }
     #fp-widget-submit:hover {
-      background: #1e293b;
+      filter: brightness(0.9);
       transform: translateY(-1px);
     }
     #fp-widget-submit:disabled {
