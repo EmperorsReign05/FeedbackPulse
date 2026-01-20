@@ -253,26 +253,6 @@ The widget will automatically:
 - **CORS Protection** - Restricted origins for protected routes
 - **Request Size Limits** - Prevents payload attacks
 
-## Environment Variables
-
-### Backend (.env)
-```env
-PORT=8080
-DATABASE_URL="postgresql://..."
-JWT_SECRET="your-strong-secret-key"
-FRONTEND_URL="http://localhost:3000"
-BACKEND_URL="http://localhost:8080"
-GEMINI_API_KEY="your-gemini-api-key"
-GOOGLE_CLIENT_ID="your-google-client-id"
-NODE_ENV="development"
-```
-
-### Frontend (.env.local)
-```env
-NEXT_PUBLIC_API_BASE_URL="http://localhost:8080"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_GOOGLE_CLIENT_ID="your-google-client-id"
-```
 
 ## License
 
