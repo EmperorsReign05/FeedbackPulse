@@ -211,6 +211,35 @@ export const labelsApi = {
         }),
 };
 
+// Webhook settings type
+export interface WebhookSettings {
+    webhookUrl: string | null;
+    webhookSecret: string | null;
+    webhookEnabled: boolean;
+}
+
+// Webhooks API
+export const webhooksApi = {
+    get: (projectId: string) =>
+        apiRequest<WebhookSettings>(`/api/projects/${projectId}/webhook`),
+
+    update: (projectId: string, settings: { webhookUrl?: string | null; webhookEnabled?: boolean }) =>
+        apiRequest<WebhookSettings>(`/api/projects/${projectId}/webhook`, {
+            method: 'PUT',
+            body: JSON.stringify(settings),
+        }),
+
+    regenerateSecret: (projectId: string) =>
+        apiRequest<WebhookSettings>(`/api/projects/${projectId}/webhook/regenerate-secret`, {
+            method: 'POST',
+        }),
+
+    test: (projectId: string) =>
+        apiRequest<{ message: string; statusCode?: number }>(`/api/projects/${projectId}/webhook/test`, {
+            method: 'POST',
+        }),
+};
+
 // Server-side API helper (for SSR)
 export const serverApiRequest = async <T>(
     endpoint: string,
@@ -254,4 +283,6 @@ export default {
     projects: projectsApi,
     feedback: feedbackApi,
     labels: labelsApi,
+    webhooks: webhooksApi,
 };
+

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { feedbackService, projectService, geminiService } from '../services';
+import { feedbackService, projectService, geminiService, webhookService } from '../services';
 import {
     submitFeedbackSchema,
     feedbackQuerySchema,
@@ -31,6 +31,21 @@ export const submitFeedback = async (
             message: validatedData.message,
         });
 
+        // Trigger webhook if enabled (async, don't wait for response)
+        if (project.webhookEnabled && project.webhookUrl && project.webhookSecret) {
+            webhookService.sendWebhook(
+                {
+                    webhookUrl: project.webhookUrl,
+                    webhookSecret: project.webhookSecret,
+                    projectId: project.id,
+                    projectName: project.name,
+                },
+                feedback
+            ).catch((err) => {
+                console.error('[Webhook] Failed to send webhook:', err);
+            });
+        }
+
         res.status(201).json({
             success: true,
             data: feedback,
@@ -39,6 +54,7 @@ export const submitFeedback = async (
         next(error);
     }
 };
+
 
 // GET /api/projects/:projectId/feedback
 // Gets paginated feedback for a project

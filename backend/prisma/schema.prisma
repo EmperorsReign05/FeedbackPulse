@@ -35,6 +35,11 @@ model Project {
   widgetBackground String   @default("#FFFFFF")   // Background color
   widgetPosition   String   @default("bottom-right") // top-left, top-right, bottom-left, bottom-right
 
+  // Webhook configuration
+  webhookUrl       String?                        // URL to send webhook POST requests
+  webhookSecret    String?                        // Secret for HMAC-SHA256 signature verification
+  webhookEnabled   Boolean  @default(false)       // Whether webhook is active
+
   @@index([userId])
   @@index([projectKey])
   @@map("projects")

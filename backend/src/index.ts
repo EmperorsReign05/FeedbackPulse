@@ -7,7 +7,8 @@ import {
     projectRoutes,
     feedbackRoutes,
     publicRoutes,
-    widgetRoutes
+    widgetRoutes,
+    webhookRoutes
 } from './routes';
 import {
     errorHandler,
@@ -103,6 +104,7 @@ app.use('/api/auth', protectedCors, authLimiter, authRoutes);
 
 // Protected API routes (restricted CORS) with standard rate limiting
 app.use('/api/projects', protectedCors, apiLimiter, projectRoutes);
+app.use('/api/projects', protectedCors, apiLimiter, webhookRoutes); // Webhook settings under /api/projects/:id/webhook
 app.use('/api/feedback', protectedCors, apiLimiter, feedbackRoutes);
 
 // Error handlers
