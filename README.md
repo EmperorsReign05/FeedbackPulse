@@ -13,8 +13,12 @@ A modern SaaS application for collecting and managing user feedback with AI-powe
 - **Labels & Tags** - Organize feedback with custom labels
 - **Smart Filtering** - Filter by Bug, Feature, or Other
 - **Dashboard** - Modern admin interface with pagination
-- **Secure Auth** - JWT-based authentication
+- **Secure Auth** - JWT-based authentication + Google OAuth
 - **Cross-Domain** - Widget works on any domain with CORS support
+- **Webhooks** - Real-time notifications with HMAC-SHA256 signatures
+- **Custom Widget** - Configurable colors, icons, and positions
+- **CSV Export** - Export feedback data with labels
+- **Rate Limiting** - Protection against abuse and spam
 
 ##  Tech Stack
 
@@ -38,9 +42,20 @@ feedback-pulse/
 │   ├── src/
 │   │   ├── config/         # Environment configuration
 │   │   ├── controllers/    # Request handlers
-│   │   ├── middleware/     # Auth, CORS, errors
+│   │   │   ├── authController.ts
+│   │   │   ├── projectController.ts
+│   │   │   ├── feedbackController.ts
+│   │   │   ├── labelController.ts
+│   │   │   ├── webhookController.ts
+│   │   │   └── widgetController.ts
+│   │   ├── middleware/     # Auth, CORS, rate limiting
 │   │   ├── routes/         # API routes
 │   │   ├── services/       # Business logic
+│   │   │   ├── authService.ts
+│   │   │   ├── projectService.ts
+│   │   │   ├── feedbackService.ts
+│   │   │   ├── webhookService.ts
+│   │   │   └── geminiService.ts
 │   │   ├── utils/          # Helper functions
 │   │   └── index.ts        # Entry point
 │   └── package.json
@@ -50,6 +65,7 @@ feedback-pulse/
 │   │   ├── app/           # App Router pages
 │   │   │   ├── (auth)/    # Login/Signup
 │   │   │   └── dashboard/ # Admin pages
+│   │   ├── components/    # Reusable UI components
 │   │   └── lib/           # API client, utils
 │   └── package.json
 │
@@ -139,6 +155,7 @@ Frontend will run at `http://localhost:3000`
 |--------|-------------------|----------------------|
 | POST   | /api/auth/signup  | Register new user    |
 | POST   | /api/auth/login   | Login user           |
+| POST   | /api/auth/google  | Google OAuth login   |
 | GET    | /api/auth/me      | Get current user     |
 
 ### Projects
@@ -147,19 +164,30 @@ Frontend will run at `http://localhost:3000`
 | POST   | /api/projects        | Create project       |
 | GET    | /api/projects        | List projects        |
 | GET    | /api/projects/:id    | Get project details  |
+| DELETE | /api/projects/:id    | Delete project       |
 
 ### Feedback
 | Method | Endpoint                             | Description            |
 |--------|--------------------------------------|------------------------|
 | GET    | /api/projects/:id/feedback           | List feedback (paginated)|
-| POST   | /api/public/feedback                 | Submit feedback (public)|
+| POST   | /api/public/report                   | Submit feedback (public)|
 | POST   | /api/feedback/:id/sentiment          | Analyze sentiment      |
+| DELETE | /api/feedback/:id                    | Delete feedback        |
 
 ### Labels
 | Method | Endpoint                             | Description          |
 |--------|--------------------------------------|----------------------|
+| GET    | /api/feedback/:id/labels             | Get labels           |
 | POST   | /api/feedback/:id/labels             | Add label            |
 | DELETE | /api/feedback/:id/labels/:labelId    | Remove label         |
+
+### Webhooks
+| Method | Endpoint                                    | Description              |
+|--------|---------------------------------------------|--------------------------|
+| GET    | /api/projects/:id/webhook                   | Get webhook settings     |
+| PUT    | /api/projects/:id/webhook                   | Update webhook settings  |
+| POST   | /api/projects/:id/webhook/regenerate-secret | Regenerate secret        |
+| POST   | /api/projects/:id/webhook/test              | Test webhook delivery    |
 
 ### Widget
 | Method | Endpoint             | Description          |
@@ -233,14 +261,19 @@ The widget will automatically:
 - [x] Google OAuth sign-in support
 - [x] User can create project and see projectKey + embed snippet
 - [x] User can delete projects
+- [x] User can delete individual feedback items
 - [x] Widget script loads on any domain and submits feedback
+- [x] Widget colors, icons, and position are customizable
 - [x] Admin dashboard lists projects
 - [x] Admin can view feedback by project
 - [x] Filter works (All/Bug/Feature/Other)
 - [x] Pagination works (CSR feedback list)
 - [x] Labels can be added and displayed
+- [x] CSV export with labels works
 - [x] Sentiment analysis works via Gemini and shows badge
+- [x] Webhook integration with HMAC signature verification
 - [x] CORS works correctly
+- [x] Rate limiting (API, auth, feedback endpoints)
 - [x] Code is clean with required layering
 - [x] Deployment-ready (Vercel + Render)
 

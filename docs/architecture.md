@@ -485,16 +485,36 @@ frontend/
 4. **Input Validation**: Zod schemas on all inputs
 5. **CORS Protection**: Restricted origins for protected routes
 6. **Widget Isolation**: Project key doesn't expose user information
+7. **Helmet.js**: Security headers (XSS, CSRF, clickjacking protection)
+8. **Rate Limiting**: Tiered rate limits for API, auth, and feedback endpoints
+9. **Request Size Limits**: Body size limited to prevent payload attacks
+10. **Google OAuth**: Secure OAuth 2.0 authentication flow
+
+---
+
+## Implemented Features
+
+The following features are now fully implemented:
+
+| Feature | Description |
+|---------|-------------|
+| ✅ Rate Limiting | Tiered rate limits (100/15min for API, 20/15min for auth, 10/min for feedback) |
+| ✅ Webhook Notifications | Real-time webhook delivery on new feedback with HMAC-SHA256 signatures |
+| ✅ Custom Widget Styling | Configurable icon, colors, text, and position |
+| ✅ CSV Export | Export feedback with labels to CSV format |
+| ✅ Google OAuth | Sign in with Google support |
+| ✅ Feedback Deletion | Delete individual feedback items |
+| ✅ Project Deletion | Delete projects with cascade delete for feedback |
 
 ---
 
 ## Future Improvements
 
-1. **Rate Limiting**: Prevent abuse of public endpoints
-2. **Email Verification**: Verify user email on signup
-3. **Webhook Notifications**: Alert on new feedback
-4. **Analytics Dashboard**: Aggregate feedback statistics
-5. **Export Functionality**: CSV/PDF export of feedback
-6. **Team Collaboration**: Multiple users per project
-7. **Custom Widget Styling**: User-configurable colors/positions
-8. **Real-time Updates**: WebSocket for live feedback notifications
+1. **Email Verification**: Verify user email on signup
+2. **Analytics Dashboard**: Aggregate feedback statistics
+3. **PDF Export**: Export feedback reports as PDF
+4. **Team Collaboration**: Multiple users per project
+5. **Real-time Updates**: WebSocket for live feedback notifications
+6. **Feedback Categories**: Custom categories beyond Bug/Feature/Other
+7. **Response Templates**: Quick response templates for common feedback
+

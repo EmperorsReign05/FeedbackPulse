@@ -243,7 +243,7 @@ GET /api/projects/clxxxxxx/feedback?page=1&limit=10&type=Bug
 
 ---
 
-### POST /api/public/feedback
+### POST /api/public/report
 
 Submits feedback from the widget. This is a **public endpoint** that doesn't require authentication.
 
@@ -395,6 +395,176 @@ Authorization: Bearer <token>
 ```
 
 **Sentiment Values:** `positive`, `neutral`, `negative`
+
+---
+
+### DELETE /api/feedback/:feedbackId
+
+Deletes a feedback item. User must own the project that the feedback belongs to.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Feedback deleted successfully"
+}
+```
+
+---
+
+### DELETE /api/projects/:projectId
+
+Deletes a project and all associated feedback. User must own the project.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Project deleted successfully"
+}
+```
+
+---
+
+## Webhook Endpoints
+
+Webhooks allow you to receive real-time notifications when new feedback is submitted.
+
+### GET /api/projects/:projectId/webhook
+
+Gets the webhook configuration for a project.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "webhookUrl": "https://your-server.com/webhook",
+    "webhookEnabled": true,
+    "webhookSecret": "whsec_xxxxxxxxxxxxx"
+  }
+}
+```
+
+---
+
+### PUT /api/projects/:projectId/webhook
+
+Updates the webhook configuration for a project.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "webhookUrl": "https://your-server.com/webhook",
+  "webhookEnabled": true
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "webhookUrl": "https://your-server.com/webhook",
+    "webhookEnabled": true,
+    "webhookSecret": "whsec_xxxxxxxxxxxxx"
+  }
+}
+```
+
+---
+
+### POST /api/projects/:projectId/webhook/regenerate-secret
+
+Regenerates the webhook secret for signature verification.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "webhookSecret": "whsec_newSecretHere"
+  }
+}
+```
+
+---
+
+### POST /api/projects/:projectId/webhook/test
+
+Sends a test webhook payload to verify your endpoint is working.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Test webhook sent successfully"
+}
+```
+
+### Webhook Payload
+
+When feedback is submitted, your webhook endpoint will receive a POST request with the following payload:
+
+```json
+{
+  "event": "feedback.created",
+  "timestamp": "2024-01-15T12:00:00.000Z",
+  "data": {
+    "id": "clxxxxxxxxxxxxxx",
+    "type": "Bug",
+    "message": "The login button does not work on mobile",
+    "projectId": "clxxxxxxxxxxxxxx",
+    "createdAt": "2024-01-15T12:00:00.000Z"
+  }
+}
+```
+
+### Webhook Signature Verification
+
+All webhooks include an `X-Webhook-Signature` header containing an HMAC-SHA256 signature. Verify it using your webhook secret:
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhookSignature(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(payload))
+    .digest('hex');
+  return signature === expectedSignature;
+}
+```
 
 ---
 
