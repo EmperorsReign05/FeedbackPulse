@@ -56,6 +56,14 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
     return;
   }
 
+  // Check domain restriction
+  const origin = req.get('origin') || req.get('referer');
+  if (!projectService.isOriginAllowed(origin, project.allowedDomains)) {
+    res.setHeader('Content-Type', 'application/javascript');
+    res.send(`console.error('[Feedback Pulse] Error: This domain is not authorized to use this widget');`);
+    return;
+  }
+
   // Get widget settings from project (with defaults as fallback)
   const icon = project.widgetIcon || 'chat';
   const buttonText = project.widgetText || 'Feedback';

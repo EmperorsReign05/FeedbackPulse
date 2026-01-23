@@ -28,6 +28,9 @@ export const createProjectSchema = z.object({
     widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
     widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
     widgetPosition: widgetPositionEnum.default('bottom-right'),
+    // Domain restriction (optional - comma-separated list of allowed domains)
+    // Supports: custom domains, *.netlify.app, *.vercel.app, *.pages.dev, localhost, etc.
+    allowedDomains: z.string().max(1000).optional(),
 });
 
 // Feedback validation schemas

@@ -26,6 +26,16 @@ export const submitFeedback = async (
             return;
         }
 
+        // Check domain restriction
+        const origin = req.get('origin') || req.get('referer');
+        if (!projectService.isOriginAllowed(origin, project.allowedDomains)) {
+            res.status(403).json({
+                success: false,
+                error: 'This domain is not authorized to submit feedback for this project',
+            });
+            return;
+        }
+
         const feedback = await feedbackService.submitFeedback(project.id, {
             type: validatedData.type,
             message: validatedData.message,

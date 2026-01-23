@@ -36,6 +36,8 @@ export interface Project {
     widgetTextColor: string;
     widgetBackground: string;
     widgetPosition: string;
+    // Domain restriction
+    allowedDomains?: string | null;
 }
 
 // Widget settings for creating/updating projects
@@ -46,6 +48,7 @@ export interface WidgetSettings {
     widgetTextColor?: string;
     widgetBackground?: string;
     widgetPosition?: string;
+    allowedDomains?: string;
 }
 
 export interface Label {

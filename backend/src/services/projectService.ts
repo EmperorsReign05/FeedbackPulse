@@ -18,7 +18,90 @@ export interface ProjectWithStats {
     widgetTextColor: string;
     widgetBackground: string;
     widgetPosition: string;
+    // Domain restriction
+    allowedDomains: string | null;
 }
+
+/**
+ * Checks if a request origin is allowed based on the project's allowedDomains
+ * Supports:
+ * - Exact domains: example.com
+ * - Full URLs: https://example.com
+ * - Free hosting: myapp.netlify.app, myapp.vercel.app, myapp.pages.dev
+ * - Localhost: localhost, localhost:3000
+ * - Wildcards: *.example.com
+ * 
+ * @param origin - The Origin or Referer header from the request
+ * @param allowedDomains - Comma-separated list of allowed domains (null = allow all)
+ * @returns true if origin is allowed, false otherwise
+ */
+export const isOriginAllowed = (origin: string | undefined, allowedDomains: string | null): boolean => {
+    // If no domain restriction is set, allow all origins
+    if (!allowedDomains || allowedDomains.trim() === '') {
+        return true;
+    }
+
+    // If no origin provided, reject (safety measure)
+    if (!origin) {
+        return false;
+    }
+
+    // Extract hostname from origin (handles both "https://example.com" and "example.com")
+    let hostname: string;
+    try {
+        // Try parsing as URL first
+        if (origin.startsWith('http://') || origin.startsWith('https://')) {
+            const url = new URL(origin);
+            hostname = url.hostname;
+        } else {
+            hostname = origin.split(':')[0]; // Handle "localhost:3000" format
+        }
+    } catch {
+        hostname = origin;
+    }
+
+    // Parse allowed domains (comma-separated)
+    const domains = allowedDomains
+        .split(',')
+        .map(d => d.trim().toLowerCase())
+        .filter(d => d.length > 0);
+
+    const hostnameLC = hostname.toLowerCase();
+
+    for (const domain of domains) {
+        // Handle wildcard domains (e.g., *.example.com)
+        if (domain.startsWith('*.')) {
+            const baseDomain = domain.slice(2); // Remove "*."
+            // Check if hostname ends with the base domain or equals it exactly
+            if (hostnameLC === baseDomain || hostnameLC.endsWith('.' + baseDomain)) {
+                return true;
+            }
+        }
+        // Handle full URL format (https://example.com)
+        else if (domain.startsWith('http://') || domain.startsWith('https://')) {
+            try {
+                const allowedUrl = new URL(domain);
+                if (hostnameLC === allowedUrl.hostname.toLowerCase()) {
+                    return true;
+                }
+            } catch {
+                // Invalid URL, try as plain domain
+                if (hostnameLC === domain) {
+                    return true;
+                }
+            }
+        }
+        // Handle plain domain (example.com, localhost)
+        else {
+            // Exact match
+            if (hostnameLC === domain) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+};
 
 // Creates a new project for a user
 export const createProject = async (
@@ -50,6 +133,7 @@ export const createProject = async (
             widgetTextColor: input.widgetTextColor,
             widgetBackground: input.widgetBackground,
             widgetPosition: input.widgetPosition,
+            allowedDomains: input.allowedDomains || null,
         },
     });
 
@@ -83,6 +167,7 @@ export const listProjects = async (userId: string): Promise<ProjectWithStats[]> 
         widgetTextColor: project.widgetTextColor,
         widgetBackground: project.widgetBackground,
         widgetPosition: project.widgetPosition,
+        allowedDomains: project.allowedDomains,
     }));
 };
 
@@ -117,6 +202,7 @@ export const getProject = async (
         widgetTextColor: project.widgetTextColor,
         widgetBackground: project.widgetBackground,
         widgetPosition: project.widgetPosition,
+        allowedDomains: project.allowedDomains,
     };
 };
 

@@ -109,6 +109,7 @@ export default function NewProjectPage() {
             widgetTextColor: '#FFFFFF',
             widgetBackground: '#FFFFFF',
             widgetPosition: 'bottom-right',
+            allowedDomains: '',
         },
     });
 
@@ -130,6 +131,7 @@ export default function NewProjectPage() {
             widgetTextColor: data.widgetTextColor,
             widgetBackground: data.widgetBackground,
             widgetPosition: data.widgetPosition,
+            allowedDomains: data.allowedDomains || undefined,
         });
 
         if (response.success && response.data) {
@@ -216,8 +218,8 @@ export default function NewProjectPage() {
                                                     type="button"
                                                     onClick={() => field.onChange(icon)}
                                                     className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon
-                                                            ? 'border-primary-500 bg-primary-50 text-primary-600'
-                                                            : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                                        ? 'border-primary-500 bg-primary-50 text-primary-600'
+                                                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     {IconComponents[icon]}
@@ -345,8 +347,8 @@ export default function NewProjectPage() {
                                                     type="button"
                                                     onClick={() => field.onChange(pos)}
                                                     className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2 ${field.value === pos
-                                                            ? 'border-primary-500 bg-primary-50 text-primary-600'
-                                                            : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                                        ? 'border-primary-500 bg-primary-50 text-primary-600'
+                                                        : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                                                         }`}
                                                 >
                                                     {PositionIcons[pos].icon}
@@ -356,6 +358,47 @@ export default function NewProjectPage() {
                                         </div>
                                     )}
                                 />
+                            </div>
+                        </div>
+
+                        {/* Security Section */}
+                        <div className="border-t pt-6">
+                            <div className="flex items-center gap-2 mb-6">
+                                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                                <h2 className="text-lg font-semibold text-gray-900">Security</h2>
+                            </div>
+
+                            {/* Allowed Domains */}
+                            <div className="mb-6">
+                                <label htmlFor="allowedDomains" className="input-label">
+                                    Allowed Domains <span className="text-gray-400 font-normal">(Optional)</span>
+                                </label>
+                                <textarea
+                                    {...register('allowedDomains')}
+                                    id="allowedDomains"
+                                    placeholder="example.com, myapp.netlify.app, myapp.vercel.app"
+                                    className="input-field min-h-[80px] resize-y"
+                                    disabled={isLoading}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Restrict the widget to only work on specific domains. Separate multiple domains with commas.
+                                </p>
+                                <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                                    <p className="text-xs font-medium text-gray-700 mb-2">Supported formats:</p>
+                                    <ul className="text-xs text-gray-500 space-y-1">
+                                        <li>• Custom domains: <code className="bg-gray-200 px-1 rounded">example.com</code></li>
+                                        <li>• Netlify: <code className="bg-gray-200 px-1 rounded">myapp.netlify.app</code></li>
+                                        <li>• Vercel: <code className="bg-gray-200 px-1 rounded">myapp.vercel.app</code></li>
+                                        <li>• Cloudflare Pages: <code className="bg-gray-200 px-1 rounded">myapp.pages.dev</code></li>
+                                        <li>• Development: <code className="bg-gray-200 px-1 rounded">localhost</code></li>
+                                        <li>• Wildcards: <code className="bg-gray-200 px-1 rounded">*.example.com</code></li>
+                                    </ul>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Leave empty to allow the widget on any domain.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
@@ -409,9 +452,9 @@ export default function NewProjectPage() {
                         {/* Widget Button Preview */}
                         <div
                             className={`absolute flex items-center gap-2 px-4 py-3 rounded-full shadow-lg transition-all ${widgetPosition === 'top-left' ? 'top-4 left-4' :
-                                    widgetPosition === 'top-right' ? 'top-4 right-4' :
-                                        widgetPosition === 'bottom-left' ? 'bottom-4 left-4' :
-                                            'bottom-4 right-4'
+                                widgetPosition === 'top-right' ? 'top-4 right-4' :
+                                    widgetPosition === 'bottom-left' ? 'bottom-4 left-4' :
+                                        'bottom-4 right-4'
                                 }`}
                             style={{
                                 backgroundColor: widgetPrimary,

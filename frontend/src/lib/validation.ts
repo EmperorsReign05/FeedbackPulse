@@ -49,6 +49,8 @@ export const createProjectSchema = z.object({
     widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
     widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
     widgetPosition: z.enum(widgetPositionOptions).default('bottom-right'),
+    // Domain restriction (optional - comma-separated list of allowed domains)
+    allowedDomains: z.string().max(1000).optional(),
 });
 
 // Label validation schemas

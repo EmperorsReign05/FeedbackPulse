@@ -35,6 +35,9 @@ model Project {
   widgetBackground String   @default("#FFFFFF")   // Background color
   widgetPosition   String   @default("bottom-right") // top-left, top-right, bottom-left, bottom-right
 
+  // Domain restriction for widget
+  allowedDomains   String?                        // Comma-separated list of allowed domains (e.g., "example.com,myapp.netlify.app")
+
   // Webhook configuration
   webhookUrl       String?                        // URL to send webhook POST requests
   webhookSecret    String?                        // Secret for HMAC-SHA256 signature verification
