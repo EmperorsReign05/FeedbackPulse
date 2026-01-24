@@ -106,6 +106,7 @@ export default function ProjectSettingsPage() {
         control,
         watch,
         reset,
+        setValue,
         formState: { errors, isDirty },
     } = useForm<UpdateProjectFormData>({
         resolver: zodResolver(updateProjectSchema),
@@ -282,7 +283,11 @@ export default function ProjectSettingsPage() {
                                                 <button
                                                     key={icon}
                                                     type="button"
-                                                    onClick={() => field.onChange(icon)}
+                                                    onClick={() => {
+                                                        field.onChange(icon);
+                                                        // Clear custom icon when selecting preset
+                                                        setValue('customIconUrl', '');
+                                                    }}
                                                     className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon && !customIconUrl
                                                         ? 'border-primary-500 bg-primary-50 text-primary-600'
                                                         : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'

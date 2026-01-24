@@ -98,6 +98,7 @@ export default function NewProjectPage() {
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<CreateProjectFormData>({
         resolver: zodResolver(createProjectSchema),
@@ -122,6 +123,7 @@ export default function NewProjectPage() {
     const widgetPrimary = watch('widgetPrimary');
     const widgetTextColor = watch('widgetTextColor');
     const widgetPosition = watch('widgetPosition');
+    const customIconUrl = watch('customIconUrl');
 
     const onSubmit = async (data: CreateProjectFormData) => {
         setIsLoading(true);
@@ -222,8 +224,12 @@ export default function NewProjectPage() {
                                                 <button
                                                     key={icon}
                                                     type="button"
-                                                    onClick={() => field.onChange(icon)}
-                                                    className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon
+                                                    onClick={() => {
+                                                        field.onChange(icon);
+                                                        // Clear custom icon when selecting preset
+                                                        setValue('customIconUrl', '');
+                                                    }}
+                                                    className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon && !customIconUrl
                                                         ? 'border-primary-500 bg-primary-50 text-primary-600'
                                                         : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                                                         }`}
@@ -239,7 +245,10 @@ export default function NewProjectPage() {
                                                     customInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                                                     customInput?.focus();
                                                 }}
-                                                className="p-3 rounded-xl border-2 border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50 transition-all flex items-center justify-center"
+                                                className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${customIconUrl
+                                                    ? 'border-primary-500 bg-primary-50 text-primary-600'
+                                                    : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                                    }`}
                                                 title="Use custom icon URL"
                                             >
                                                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
