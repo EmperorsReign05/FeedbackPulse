@@ -64,20 +64,28 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
     return;
   }
 
-  // Get widget settings from project (with defaults as fallback)
-  const icon = project.widgetIcon || 'chat';
-  const buttonText = project.widgetText || 'Feedback';
-  const primaryColor = project.widgetPrimary || '#2563EB';
-  const textColor = project.widgetTextColor || '#FFFFFF';
-  const bgColor = project.widgetBackground || '#FFFFFF';
-  const position = project.widgetPosition || 'bottom-right';
+  // Get widget settings from query params first (takes priority), then from project
+  const customIconUrl = req.query.customIcon as string | undefined;
+  const icon = (req.query.icon as string) || project.widgetIcon || 'chat';
+  const buttonText = (req.query.text as string) || project.widgetText || 'Feedback';
+  const primaryColor = (req.query.primary as string) || project.widgetPrimary || '#2563EB';
+  const textColor = (req.query.textColor as string) || project.widgetTextColor || '#FFFFFF';
+  const bgColor = (req.query.bg as string) || project.widgetBackground || '#FFFFFF';
+  const position = (req.query.pos as string) || project.widgetPosition || 'bottom-right';
 
   const backendUrl = config.isProduction
     ? config.backendUrl
     : `http://localhost:${config.port}`;
 
-  // Get the icon SVG
-  const iconSvg = WIDGET_ICONS[icon] || WIDGET_ICONS.chat;
+  // Get the icon content - use custom icon URL if provided, otherwise use preset SVG
+  let iconContent: string;
+  if (customIconUrl) {
+    // Use custom icon as an img tag
+    iconContent = `<img src="${customIconUrl}" alt="icon" style="width:18px;height:18px;object-fit:contain;">`;
+  } else {
+    // Use preset SVG icon
+    iconContent = WIDGET_ICONS[icon] || WIDGET_ICONS.chat;
+  }
 
   // Get position styles
   const posStyles = POSITION_STYLES[position] || POSITION_STYLES['bottom-right'];
@@ -313,7 +321,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   // Create floating button
   const button = document.createElement('button');
   button.id = 'fp-widget-button';
-  button.innerHTML = '${iconSvg}<span>${buttonText}</span>';
+  button.innerHTML = '${iconContent}<span>${buttonText}</span>';
   button.setAttribute('aria-label', 'Open feedback form');
   button.setAttribute('aria-expanded', 'false');
   document.body.appendChild(button);

@@ -395,20 +395,26 @@ export const getEmbedSnippet = (projectKey: string, settings?: WidgetSettings): 
 
     // If settings provided, include them as query params for the widget
     if (settings) {
+        // Start with base params (always included)
         const params = new URLSearchParams({
             key: projectKey,
-            icon: settings.widgetIcon,
             text: settings.widgetText,
             primary: settings.widgetPrimary,
             textColor: settings.widgetTextColor,
             bg: settings.widgetBackground,
             pos: settings.widgetPosition,
         });
-        // Add custom icon URL if provided (convert Google Drive URLs)
+
+        // Only include ONE of: customIcon OR preset icon (customIcon takes priority)
         if (settings.customIconUrl) {
             const directUrl = convertGoogleDriveUrl(settings.customIconUrl);
             params.set('customIcon', directUrl);
+            // Note: preset 'icon' is NOT included when customIcon is provided
+        } else {
+            // Only add preset icon if no custom icon
+            params.set('icon', settings.widgetIcon);
         }
+
         return `<script src="${backendUrl}/widget.js?${params.toString()}" async></script>`;
     }
 
