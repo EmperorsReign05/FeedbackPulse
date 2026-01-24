@@ -31,6 +31,30 @@ export const createProjectSchema = z.object({
     // Domain restriction (optional - comma-separated list of allowed domains)
     // Supports: custom domains, *.netlify.app, *.vercel.app, *.pages.dev, localhost, etc.
     allowedDomains: z.string().max(1000).optional(),
+    // Custom icon URL (optional - external URL for custom widget icon)
+    customIconUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
+    // Webhook settings (optional - can be configured on create or later in settings)
+    webhookUrl: z.string().url('Invalid webhook URL').optional().or(z.literal('')),
+    webhookEnabled: z.boolean().optional(),
+});
+
+// Schema for updating project settings (all fields optional)
+export const updateProjectSchema = z.object({
+    name: z.string().min(2, 'Project name must be at least 2 characters').optional(),
+    // Widget customization
+    widgetIcon: widgetIconEnum.optional(),
+    widgetText: z.string().min(1).max(20).optional(),
+    widgetPrimary: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetPosition: widgetPositionEnum.optional(),
+    // Domain restriction
+    allowedDomains: z.string().max(1000).optional().nullable(),
+    // Custom icon URL
+    customIconUrl: z.string().url('Invalid URL format').optional().nullable().or(z.literal('')),
+    // Webhook settings
+    webhookUrl: z.string().url('Invalid webhook URL').optional().nullable().or(z.literal('')),
+    webhookEnabled: z.boolean().optional(),
 });
 
 // Feedback validation schemas
@@ -58,6 +82,8 @@ export const feedbackQuerySchema = z.object({
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
+export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 export type SubmitFeedbackInput = z.infer<typeof submitFeedbackSchema>;
 export type AddLabelInput = z.infer<typeof addLabelSchema>;
 export type FeedbackQueryInput = z.infer<typeof feedbackQuerySchema>;
+

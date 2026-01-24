@@ -38,6 +38,9 @@ model Project {
   // Domain restriction for widget
   allowedDomains   String?                        // Comma-separated list of allowed domains (e.g., "example.com,myapp.netlify.app")
 
+  // Custom widget icon (external URL)
+  customIconUrl    String?                        // External URL for custom widget icon (e.g., from Netlify/Vercel public folder)
+
   // Webhook configuration
   webhookUrl       String?                        // URL to send webhook POST requests
   webhookSecret    String?                        // Secret for HMAC-SHA256 signature verification

@@ -51,6 +51,30 @@ export const createProjectSchema = z.object({
     widgetPosition: z.enum(widgetPositionOptions).default('bottom-right'),
     // Domain restriction (optional - comma-separated list of allowed domains)
     allowedDomains: z.string().max(1000).optional(),
+    // Custom icon URL (optional - external URL like from Netlify/Vercel public folder)
+    customIconUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
+    // Webhook settings (optional - can be configured on create or later in settings)
+    webhookUrl: z.string().url('Invalid webhook URL').optional().or(z.literal('')),
+    webhookEnabled: z.boolean().optional(),
+});
+
+// Schema for updating project settings (all fields optional)
+export const updateProjectSchema = z.object({
+    name: z.string().min(2, 'Project name must be at least 2 characters').max(100).optional(),
+    // Widget customization
+    widgetIcon: z.enum(widgetIconOptions).optional(),
+    widgetText: z.string().min(1).max(20).optional(),
+    widgetPrimary: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
+    widgetPosition: z.enum(widgetPositionOptions).optional(),
+    // Domain restriction
+    allowedDomains: z.string().max(1000).optional(),
+    // Custom icon URL
+    customIconUrl: z.string().url('Invalid URL format').optional().or(z.literal('')),
+    // Webhook settings
+    webhookUrl: z.string().url('Invalid webhook URL').optional().or(z.literal('')),
+    webhookEnabled: z.boolean().optional(),
 });
 
 // Label validation schemas
@@ -65,4 +89,6 @@ export const addLabelSchema = z.object({
 export type SignupFormData = z.infer<typeof signupSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type CreateProjectFormData = z.infer<typeof createProjectSchema>;
+export type UpdateProjectFormData = z.infer<typeof updateProjectSchema>;
 export type AddLabelFormData = z.infer<typeof addLabelSchema>;
+

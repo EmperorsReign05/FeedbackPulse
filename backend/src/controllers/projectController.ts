@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { projectService } from '../services';
-import { createProjectSchema } from '../utils/validation';
+import { createProjectSchema, updateProjectSchema } from '../utils/validation';
 
 // POST /api/projects
 // Creates a new project
@@ -32,6 +32,7 @@ export const createProject = async (
                     widgetTextColor: project.widgetTextColor,
                     widgetBackground: project.widgetBackground,
                     widgetPosition: project.widgetPosition,
+                    customIconUrl: project.customIconUrl,
                 }),
             },
         });
@@ -105,6 +106,7 @@ export const getProject = async (
                     widgetTextColor: project.widgetTextColor,
                     widgetBackground: project.widgetBackground,
                     widgetPosition: project.widgetPosition,
+                    customIconUrl: project.customIconUrl,
                 }),
             },
         });
@@ -143,6 +145,102 @@ export const deleteProject = async (
         res.json({
             success: true,
             message: 'Project deleted successfully',
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// PUT /api/projects/:projectId
+// Updates a project's settings
+export const updateProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({
+                success: false,
+                error: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { projectId } = req.params;
+        const validatedData = updateProjectSchema.parse(req.body);
+        const project = await projectService.updateProject(projectId, req.user.userId, validatedData);
+
+        if (!project) {
+            res.status(404).json({
+                success: false,
+                error: 'Project not found or unauthorized',
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            data: {
+                ...project,
+                embedSnippet: projectService.getEmbedSnippet(project.projectKey, {
+                    widgetIcon: project.widgetIcon,
+                    widgetText: project.widgetText,
+                    widgetPrimary: project.widgetPrimary,
+                    widgetTextColor: project.widgetTextColor,
+                    widgetBackground: project.widgetBackground,
+                    widgetPosition: project.widgetPosition,
+                    customIconUrl: project.customIconUrl,
+                }),
+            },
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// POST /api/projects/:projectId/regenerate-key
+// Regenerates the project's API key
+export const regenerateProjectKey = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({
+                success: false,
+                error: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { projectId } = req.params;
+        const project = await projectService.regenerateProjectKey(projectId, req.user.userId);
+
+        if (!project) {
+            res.status(404).json({
+                success: false,
+                error: 'Project not found or unauthorized',
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            message: 'Project key regenerated successfully. Please update your embed snippet.',
+            data: {
+                ...project,
+                embedSnippet: projectService.getEmbedSnippet(project.projectKey, {
+                    widgetIcon: project.widgetIcon,
+                    widgetText: project.widgetText,
+                    widgetPrimary: project.widgetPrimary,
+                    widgetTextColor: project.widgetTextColor,
+                    widgetBackground: project.widgetBackground,
+                    widgetPosition: project.widgetPosition,
+                    customIconUrl: project.customIconUrl,
+                }),
+            },
         });
     } catch (error) {
         next(error);

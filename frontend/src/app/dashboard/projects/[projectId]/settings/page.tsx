@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createProjectSchema, CreateProjectFormData, widgetIconOptions, widgetPositionOptions, WidgetIcon, WidgetPosition } from '@/lib/validation';
-import { projectsApi } from '@/lib/api';
+import { updateProjectSchema, UpdateProjectFormData, widgetIconOptions, widgetPositionOptions, WidgetIcon, WidgetPosition } from '@/lib/validation';
+import { projectsApi, Project } from '@/lib/api';
 
 // Icon SVG components for the widget customizer
 const IconComponents: Record<WidgetIcon, React.ReactNode> = {
@@ -88,32 +88,27 @@ const PositionIcons: Record<WidgetPosition, { icon: React.ReactNode; label: stri
     },
 };
 
-export default function NewProjectPage() {
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(false);
+export default function ProjectSettingsPage() {
+    const params = useParams();
+    const projectId = params.projectId as string;
+
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isRegeneratingKey, setIsRegeneratingKey] = useState(false);
+    const [project, setProject] = useState<Project | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState<string | null>(null);
+    const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
 
     const {
         register,
         handleSubmit,
         control,
         watch,
-        formState: { errors },
-    } = useForm<CreateProjectFormData>({
-        resolver: zodResolver(createProjectSchema),
-        defaultValues: {
-            name: '',
-            widgetIcon: 'chat',
-            widgetText: 'Feedback',
-            widgetPrimary: '#2563EB',
-            widgetTextColor: '#FFFFFF',
-            widgetBackground: '#FFFFFF',
-            widgetPosition: 'bottom-right',
-            allowedDomains: '',
-            customIconUrl: '',
-            webhookUrl: '',
-            webhookEnabled: false,
-        },
+        reset,
+        formState: { errors, isDirty },
+    } = useForm<UpdateProjectFormData>({
+        resolver: zodResolver(updateProjectSchema),
     });
 
     // Watch widget settings for live preview
@@ -122,58 +117,123 @@ export default function NewProjectPage() {
     const widgetPrimary = watch('widgetPrimary');
     const widgetTextColor = watch('widgetTextColor');
     const widgetPosition = watch('widgetPosition');
+    const customIconUrl = watch('customIconUrl');
 
-    const onSubmit = async (data: CreateProjectFormData) => {
-        setIsLoading(true);
+    useEffect(() => {
+        const loadProject = async () => {
+            const response = await projectsApi.get(projectId);
+            if (response.success && response.data) {
+                setProject(response.data);
+                // Reset form with project data
+                reset({
+                    name: response.data.name,
+                    widgetIcon: response.data.widgetIcon as WidgetIcon,
+                    widgetText: response.data.widgetText,
+                    widgetPrimary: response.data.widgetPrimary,
+                    widgetTextColor: response.data.widgetTextColor,
+                    widgetBackground: response.data.widgetBackground,
+                    widgetPosition: response.data.widgetPosition as WidgetPosition,
+                    allowedDomains: response.data.allowedDomains || '',
+                    customIconUrl: response.data.customIconUrl || '',
+                });
+            } else {
+                setError(response.error || 'Failed to load project');
+            }
+            setIsLoading(false);
+        };
+
+        loadProject();
+    }, [projectId, reset]);
+
+    const onSubmit = async (data: UpdateProjectFormData) => {
+        setIsSaving(true);
         setError(null);
+        setSuccess(null);
 
-        const response = await projectsApi.create(data.name, {
-            widgetIcon: data.widgetIcon,
-            widgetText: data.widgetText,
-            widgetPrimary: data.widgetPrimary,
-            widgetTextColor: data.widgetTextColor,
-            widgetBackground: data.widgetBackground,
-            widgetPosition: data.widgetPosition,
-            allowedDomains: data.allowedDomains || undefined,
-            customIconUrl: data.customIconUrl || undefined,
-            webhookUrl: data.webhookUrl || undefined,
-            webhookEnabled: data.webhookEnabled || false,
-        });
+        const response = await projectsApi.update(projectId, data);
 
         if (response.success && response.data) {
-            router.push(`/dashboard/projects/${response.data.id}`);
+            setProject(response.data);
+            setSuccess('Settings saved successfully!');
+            // Reset dirty state
+            reset(data);
         } else {
-            setError(response.error || 'Failed to create project. Please try again.');
-            setIsLoading(false);
+            setError(response.error || 'Failed to save settings');
         }
+
+        setIsSaving(false);
     };
+
+    const handleRegenerateKey = async () => {
+        setIsRegeneratingKey(true);
+        setError(null);
+        setSuccess(null);
+
+        const response = await projectsApi.regenerateKey(projectId);
+
+        if (response.success && response.data) {
+            setProject(response.data);
+            setSuccess('API key regenerated successfully! Please update your embed snippet.');
+            setShowRegenerateConfirm(false);
+        } else {
+            setError(response.error || 'Failed to regenerate key');
+        }
+
+        setIsRegeneratingKey(false);
+    };
+
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="w-8 h-8 spinner"></div>
+            </div>
+        );
+    }
+
+    if (!project) {
+        return (
+            <div className="text-center py-12">
+                <h2 className="text-xl font-semibold text-gray-900 mb-2">Project not found</h2>
+                <p className="text-gray-600 mb-6">The project you&apos;re looking for doesn&apos;t exist or you don&apos;t have access.</p>
+                <Link href="/dashboard/projects" className="btn-primary">
+                    Back to Projects
+                </Link>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-5xl mx-auto">
             {/* Back Link */}
             <Link
-                href="/dashboard/projects"
+                href={`/dashboard/projects/${projectId}`}
                 className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-8"
             >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Back to Projects
+                Back to Project
             </Link>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Form Section */}
                 <div className="card p-8">
                     <div className="mb-8">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Create New Project</h1>
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">Project Settings</h1>
                         <p className="text-gray-600">
-                            Set up a new project and customize your feedback widget
+                            Customize your widget appearance and settings
                         </p>
                     </div>
 
                     {error && (
                         <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm animate-slide-down">
                             {error}
+                        </div>
+                    )}
+
+                    {success && (
+                        <div className="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm animate-slide-down">
+                            {success}
                         </div>
                     )}
 
@@ -189,7 +249,7 @@ export default function NewProjectPage() {
                                 id="name"
                                 placeholder="My Awesome Project"
                                 className={`input-field ${errors.name ? 'input-error' : ''}`}
-                                disabled={isLoading}
+                                disabled={isSaving}
                             />
                             {errors.name && (
                                 <p className="error-message">
@@ -236,6 +296,25 @@ export default function NewProjectPage() {
                                 />
                             </div>
 
+                            {/* Custom Icon URL */}
+                            <div className="mb-6">
+                                <label htmlFor="customIconUrl" className="input-label">
+                                    Custom Icon URL <span className="text-gray-400 font-normal">(Optional)</span>
+                                </label>
+                                <input
+                                    {...register('customIconUrl')}
+                                    type="url"
+                                    id="customIconUrl"
+                                    placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
+                                    className="input-field"
+                                    disabled={isSaving}
+                                />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Use a shareable <strong>Google Drive</strong> link or <strong>Imgur</strong> direct link.
+                                    For Google Drive: Upload image → Right-click → Share → Anyone with link → Copy link.
+                                </p>
+                            </div>
+
                             {/* Launcher Text */}
                             <div className="mb-6">
                                 <label htmlFor="widgetText" className="input-label">
@@ -247,7 +326,7 @@ export default function NewProjectPage() {
                                     id="widgetText"
                                     placeholder="Feedback"
                                     className="input-field"
-                                    disabled={isLoading}
+                                    disabled={isSaving}
                                     maxLength={20}
                                 />
                             </div>
@@ -266,17 +345,17 @@ export default function NewProjectPage() {
                                                 <div className="flex items-center gap-2">
                                                     <input
                                                         type="color"
-                                                        value={field.value}
+                                                        value={field.value || '#2563EB'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-1"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                     <input
                                                         type="text"
-                                                        value={field.value}
+                                                        value={field.value || '#2563EB'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="input-field flex-1 !py-2 !px-3 text-sm font-mono"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                 </div>
                                             )}
@@ -293,17 +372,17 @@ export default function NewProjectPage() {
                                                 <div className="flex items-center gap-2">
                                                     <input
                                                         type="color"
-                                                        value={field.value}
+                                                        value={field.value || '#FFFFFF'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-1"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                     <input
                                                         type="text"
-                                                        value={field.value}
+                                                        value={field.value || '#FFFFFF'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="input-field flex-1 !py-2 !px-3 text-sm font-mono"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                 </div>
                                             )}
@@ -320,17 +399,17 @@ export default function NewProjectPage() {
                                                 <div className="flex items-center gap-2">
                                                     <input
                                                         type="color"
-                                                        value={field.value}
+                                                        value={field.value || '#FFFFFF'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-1"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                     <input
                                                         type="text"
-                                                        value={field.value}
+                                                        value={field.value || '#FFFFFF'}
                                                         onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                                                         className="input-field flex-1 !py-2 !px-3 text-sm font-mono"
-                                                        disabled={isLoading}
+                                                        disabled={isSaving}
                                                     />
                                                 </div>
                                             )}
@@ -386,117 +465,86 @@ export default function NewProjectPage() {
                                     id="allowedDomains"
                                     placeholder="example.com, myapp.netlify.app, myapp.vercel.app"
                                     className="input-field min-h-[80px] resize-y"
-                                    disabled={isLoading}
+                                    disabled={isSaving}
                                 />
                                 <p className="text-xs text-gray-500 mt-2">
                                     Restrict the widget to only work on specific domains. Separate multiple domains with commas.
                                 </p>
-                                <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
-                                    <p className="text-xs font-medium text-gray-700 mb-2">Supported formats:</p>
-                                    <ul className="text-xs text-gray-500 space-y-1">
-                                        <li>• Custom domains: <code className="bg-gray-200 px-1 rounded">example.com</code></li>
-                                        <li>• Netlify: <code className="bg-gray-200 px-1 rounded">myapp.netlify.app</code></li>
-                                        <li>• Vercel: <code className="bg-gray-200 px-1 rounded">myapp.vercel.app</code></li>
-                                        <li>• Cloudflare Pages: <code className="bg-gray-200 px-1 rounded">myapp.pages.dev</code></li>
-                                        <li>• Development: <code className="bg-gray-200 px-1 rounded">localhost</code></li>
-                                        <li>• Wildcards: <code className="bg-gray-200 px-1 rounded">*.example.com</code></li>
-                                    </ul>
-                                    <p className="text-xs text-gray-500 mt-2">
-                                        Leave empty to allow the widget on any domain.
-                                    </p>
-                                </div>
                             </div>
                         </div>
 
-                        {/* Advanced Settings Section */}
-                        <div className="border-t pt-6">
-                            <div className="flex items-center gap-2 mb-6">
-                                <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                                </svg>
-                                <h2 className="text-lg font-semibold text-gray-900">Advanced Settings</h2>
-                                <span className="text-xs text-gray-400">(Optional)</span>
-                            </div>
-
-                            {/* Custom Icon URL */}
-                            <div className="mb-6">
-                                <label htmlFor="customIconUrl" className="input-label">
-                                    Custom Icon URL <span className="text-gray-400 font-normal">(Optional)</span>
-                                </label>
-                                <input
-                                    {...register('customIconUrl')}
-                                    type="url"
-                                    id="customIconUrl"
-                                    placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
-                                    className="input-field"
-                                    disabled={isLoading}
-                                />
-                                <p className="text-xs text-gray-500 mt-2">
-                                    Use a shareable <strong>Google Drive</strong> link or <strong>Imgur</strong> direct link.
-                                    For Google Drive: Upload image → Right-click → Share → Anyone with link → Copy link.
-                                </p>
-                            </div>
-
-                            {/* Webhook URL */}
-                            <div className="mb-6">
-                                <label htmlFor="webhookUrl" className="input-label">
-                                    Webhook URL <span className="text-gray-400 font-normal">(Optional)</span>
-                                </label>
-                                <input
-                                    {...register('webhookUrl')}
-                                    type="url"
-                                    id="webhookUrl"
-                                    placeholder="https://your-server.com/webhook"
-                                    className="input-field"
-                                    disabled={isLoading}
-                                />
-                                <p className="text-xs text-gray-500 mt-2">
-                                    Receive real-time notifications when new feedback is submitted.
-                                    We&apos;ll send a POST request with the feedback data to this URL.
-                                </p>
-                            </div>
-
-                            {/* Webhook Enabled */}
-                            <div className="mb-6">
-                                <label className="flex items-center gap-3 cursor-pointer">
-                                    <input
-                                        {...register('webhookEnabled')}
-                                        type="checkbox"
-                                        className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                                        disabled={isLoading}
-                                    />
-                                    <span className="text-sm font-medium text-gray-700">Enable webhook notifications</span>
-                                </label>
-                                <p className="text-xs text-gray-500 mt-2 ml-8">
-                                    You can configure and test webhooks later in project settings.
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Actions */}
+                        {/* Save Button */}
                         <div className="flex gap-4 pt-4">
-                            <Link
-                                href="/dashboard/projects"
-                                className="btn-secondary flex-1 text-center"
-                            >
-                                Cancel
-                            </Link>
                             <button
                                 type="submit"
                                 className="btn-primary flex-1"
-                                disabled={isLoading}
+                                disabled={isSaving || !isDirty}
                             >
-                                {isLoading ? (
+                                {isSaving ? (
                                     <span className="flex items-center justify-center gap-2">
                                         <div className="w-5 h-5 spinner"></div>
-                                        Creating...
+                                        Saving...
                                     </span>
                                 ) : (
-                                    'Create Project'
+                                    'Save Changes'
                                 )}
                             </button>
                         </div>
                     </form>
+
+                    {/* API Key Section */}
+                    <div className="border-t pt-6 mt-8">
+                        <div className="flex items-center gap-2 mb-4">
+                            <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                            </svg>
+                            <h2 className="text-lg font-semibold text-gray-900">API Key</h2>
+                        </div>
+
+                        <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                            <p className="text-sm font-mono text-gray-700 break-all">{project.projectKey}</p>
+                        </div>
+
+                        <div className="p-4 bg-orange-50 rounded-xl border border-orange-100 mb-4">
+                            <p className="text-sm text-orange-800">
+                                <strong>Warning:</strong> Regenerating your API key will immediately invalidate the old key.
+                                You will need to update the embed snippet on all websites using this project.
+                            </p>
+                        </div>
+
+                        {showRegenerateConfirm ? (
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleRegenerateKey}
+                                    disabled={isRegeneratingKey}
+                                    className="btn-primary !bg-red-600 hover:!bg-red-700 flex-1"
+                                >
+                                    {isRegeneratingKey ? (
+                                        <span className="flex items-center justify-center gap-2">
+                                            <div className="w-5 h-5 spinner"></div>
+                                            Regenerating...
+                                        </span>
+                                    ) : (
+                                        'Yes, Regenerate Key'
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setShowRegenerateConfirm(false)}
+                                    className="btn-secondary flex-1"
+                                    disabled={isRegeneratingKey}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => setShowRegenerateConfirm(true)}
+                                className="btn-secondary w-full"
+                            >
+                                Regenerate API Key
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Preview Section */}
@@ -522,38 +570,39 @@ export default function NewProjectPage() {
 
                         {/* Widget Button Preview */}
                         <div
-                            className={`absolute flex items-center gap-2 px-4 py-3 rounded-full shadow-lg transition-all ${widgetPosition === 'top-left' ? 'top-4 left-4' :
-                                widgetPosition === 'top-right' ? 'top-4 right-4' :
-                                    widgetPosition === 'bottom-left' ? 'bottom-4 left-4' :
+                            className={`absolute flex items-center gap-2 px-4 py-3 rounded-full shadow-lg transition-all ${(widgetPosition || project.widgetPosition) === 'top-left' ? 'top-4 left-4' :
+                                (widgetPosition || project.widgetPosition) === 'top-right' ? 'top-4 right-4' :
+                                    (widgetPosition || project.widgetPosition) === 'bottom-left' ? 'bottom-4 left-4' :
                                         'bottom-4 right-4'
                                 }`}
                             style={{
-                                backgroundColor: widgetPrimary,
-                                color: widgetTextColor,
+                                backgroundColor: widgetPrimary || project.widgetPrimary,
+                                color: widgetTextColor || project.widgetTextColor,
                             }}
                         >
-                            <span className="[&>svg]:w-4 [&>svg]:h-4">
-                                {IconComponents[widgetIcon as WidgetIcon]}
-                            </span>
-                            <span className="text-sm font-semibold">{widgetText || 'Feedback'}</span>
+                            {customIconUrl ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={customIconUrl} alt="Custom icon" className="w-5 h-5 object-contain" />
+                            ) : (
+                                <span className="[&>svg]:w-4 [&>svg]:h-4">
+                                    {IconComponents[(widgetIcon || project.widgetIcon) as WidgetIcon]}
+                                </span>
+                            )}
+                            <span className="text-sm font-semibold">{widgetText || project.widgetText || 'Feedback'}</span>
                         </div>
                     </div>
 
-                    {/* Info Box */}
-                    <div className="mt-6 p-4 bg-primary-50 rounded-xl border border-primary-100">
-                        <div className="flex gap-3">
-                            <div className="w-8 h-8 bg-primary-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900 text-sm mb-1">What happens next?</h3>
-                                <p className="text-xs text-gray-600">
-                                    After creating your project, you&apos;ll get an embed snippet that you can add to any website to start collecting feedback with your customized widget.
-                                </p>
-                            </div>
+                    {/* Current Embed Snippet */}
+                    <div className="mt-6">
+                        <h3 className="text-sm font-semibold text-gray-900 mb-3">Current Embed Snippet</h3>
+                        <div className="bg-gray-900 rounded-xl p-4 overflow-x-auto">
+                            <code className="text-sm text-green-400 break-all">
+                                {project.embedSnippet}
+                            </code>
                         </div>
+                        <p className="text-xs text-gray-500 mt-2">
+                            Copy this snippet and paste it into your website&apos;s HTML before the closing &lt;/body&gt; tag.
+                        </p>
                     </div>
                 </div>
             </div>

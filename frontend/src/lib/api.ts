@@ -36,6 +36,8 @@ export interface Project {
     widgetTextColor: string;
     widgetBackground: string;
     widgetPosition: string;
+    // Custom icon URL
+    customIconUrl?: string | null;
     // Domain restriction
     allowedDomains?: string | null;
 }
@@ -49,6 +51,9 @@ export interface WidgetSettings {
     widgetBackground?: string;
     widgetPosition?: string;
     allowedDomains?: string;
+    customIconUrl?: string;
+    webhookUrl?: string;
+    webhookEnabled?: boolean;
 }
 
 export interface Label {
@@ -178,6 +183,17 @@ export const projectsApi = {
     delete: (projectId: string) =>
         apiRequest<void>(`/api/projects/${projectId}`, {
             method: 'DELETE',
+        }),
+
+    update: (projectId: string, settings: WidgetSettings) =>
+        apiRequest<Project>(`/api/projects/${projectId}`, {
+            method: 'PUT',
+            body: JSON.stringify(settings),
+        }),
+
+    regenerateKey: (projectId: string) =>
+        apiRequest<Project>(`/api/projects/${projectId}/regenerate-key`, {
+            method: 'POST',
         }),
 };
 

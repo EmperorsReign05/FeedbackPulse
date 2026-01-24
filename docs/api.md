@@ -184,7 +184,97 @@ Authorization: Bearer <token>
     "projectKey": "fp_aBcDeFgHiJ",
     "createdAt": "2024-01-15T10:30:00.000Z",
     "feedbackCount": 15,
+    "widgetIcon": "chat",
+    "widgetText": "Feedback",
+    "widgetPrimary": "#2563EB",
+    "widgetTextColor": "#FFFFFF",
+    "widgetBackground": "#FFFFFF",
+    "widgetPosition": "bottom-right",
+    "customIconUrl": null,
+    "allowedDomains": null,
     "embedSnippet": "<script src=\"https://feedbackpulse.onrender.com/widget.js?key=fp_aBcDeFgHiJ\" async></script>"
+  }
+}
+```
+
+---
+
+### PUT /api/projects/:projectId
+
+Updates a project's settings (widget appearance, domains, webhooks).
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Request Body (all fields optional):**
+```json
+{
+  "name": "Updated Website Name",
+  "widgetIcon": "star",
+  "widgetText": "Send Feedback",
+  "widgetPrimary": "#10B981",
+  "widgetTextColor": "#FFFFFF",
+  "widgetBackground": "#1F2937",
+  "widgetPosition": "bottom-left",
+  "allowedDomains": "example.com, myapp.netlify.app",
+  "customIconUrl": "https://yoursite.com/icon.png",
+  "webhookUrl": "https://your-server.com/webhook",
+  "webhookEnabled": true
+}
+```
+
+**Widget Icon Options:** `chat`, `mail`, `question`, `star`, `settings`, `thumbsUp`, `envelope`, `info`
+
+**Widget Position Options:** `top-left`, `top-right`, `bottom-left`, `bottom-right`
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "id": "clxxxxxxxxxxxxxx",
+    "name": "Updated Website Name",
+    "projectKey": "fp_aBcDeFgHiJ",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "feedbackCount": 15,
+    "widgetIcon": "star",
+    "widgetText": "Send Feedback",
+    "widgetPrimary": "#10B981",
+    "widgetTextColor": "#FFFFFF",
+    "widgetBackground": "#1F2937",
+    "widgetPosition": "bottom-left",
+    "customIconUrl": "https://yoursite.com/icon.png",
+    "allowedDomains": "example.com, myapp.netlify.app",
+    "embedSnippet": "<script src=\"https://feedbackpulse.onrender.com/widget.js?key=fp_aBcDeFgHiJ&icon=star&...\" async></script>"
+  }
+}
+```
+
+---
+
+### POST /api/projects/:projectId/regenerate-key
+
+Regenerates the project's API key. **Warning:** This will invalidate the old key immediately.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Project key regenerated successfully. Please update your embed snippet.",
+  "data": {
+    "id": "clxxxxxxxxxxxxxx",
+    "name": "My Website",
+    "projectKey": "fp_NewKeyHere",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "feedbackCount": 15,
+    "embedSnippet": "<script src=\"https://feedbackpulse.onrender.com/widget.js?key=fp_NewKeyHere\" async></script>"
   }
 }
 ```
