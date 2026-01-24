@@ -213,3 +213,44 @@ export const deleteFeedback = async (
         next(error);
     }
 };
+
+// DELETE /api/projects/:projectId/feedback/all
+// Deletes all feedback for a project
+export const deleteAllFeedback = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        if (!req.user) {
+            res.status(401).json({
+                success: false,
+                error: 'Not authenticated',
+            });
+            return;
+        }
+
+        const { projectId } = req.params;
+
+        // Verify project ownership
+        const project = await projectService.getProject(projectId, req.user.userId);
+
+        if (!project) {
+            res.status(404).json({
+                success: false,
+                error: 'Project not found',
+            });
+            return;
+        }
+
+        // Delete all feedback for the project
+        const deletedCount = await feedbackService.deleteAllFeedback(projectId);
+
+        res.json({
+            success: true,
+            data: { deleted: true, count: deletedCount },
+        });
+    } catch (error) {
+        next(error);
+    }
+};

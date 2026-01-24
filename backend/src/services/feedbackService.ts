@@ -162,3 +162,30 @@ export const deleteFeedback = async (feedbackId: string): Promise<void> => {
         where: { id: feedbackId },
     });
 };
+
+// Deletes all feedback for a project (also deletes associated labels)
+export const deleteAllFeedback = async (projectId: string): Promise<number> => {
+    // Get all feedback IDs for the project
+    const feedbackItems = await prisma.feedback.findMany({
+        where: { projectId },
+        select: { id: true },
+    });
+
+    const feedbackIds = feedbackItems.map(f => f.id);
+
+    if (feedbackIds.length === 0) {
+        return 0;
+    }
+
+    // First delete all associated labels
+    await prisma.feedbackLabel.deleteMany({
+        where: { feedbackId: { in: feedbackIds } },
+    });
+
+    // Then delete all feedback
+    const result = await prisma.feedback.deleteMany({
+        where: { projectId },
+    });
+
+    return result.count;
+};

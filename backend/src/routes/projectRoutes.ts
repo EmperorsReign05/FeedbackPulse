@@ -19,6 +19,7 @@ router.post('/:projectId/regenerate-key', projectController.regenerateProjectKey
 
 // Feedback for a project
 router.get('/:projectId/feedback', feedbackController.getFeedback);
+router.delete('/:projectId/feedback/all', feedbackController.deleteAllFeedback);
 
 export default router;
 

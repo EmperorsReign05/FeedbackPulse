@@ -214,6 +214,11 @@ export const feedbackApi = {
         apiRequest<void>(`/api/feedback/${feedbackId}`, {
             method: 'DELETE',
         }),
+
+    deleteAll: (projectId: string) =>
+        apiRequest<{ deleted: boolean; count: number }>(`/api/projects/${projectId}/feedback/all`, {
+            method: 'DELETE',
+        }),
 };
 
 // Labels API
