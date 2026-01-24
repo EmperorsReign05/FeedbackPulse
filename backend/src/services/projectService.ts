@@ -373,14 +373,21 @@ export interface WidgetSettings {
 
 // Convert Google Drive shareable link to direct image URL
 // Input: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
-// Output: https://drive.google.com/uc?export=view&id=FILE_ID
+// Output: https://lh3.googleusercontent.com/d/FILE_ID (works better for embedding)
 const convertGoogleDriveUrl = (url: string): string => {
     if (!url) return url;
 
     // Check if it's a Google Drive shareable link
     const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (driveMatch && driveMatch[1]) {
-        return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+        // Use lh3.googleusercontent.com which handles images better (no redirects)
+        return `https://lh3.googleusercontent.com/d/${driveMatch[1]}`;
+    }
+
+    // Also handle the uc?export=view format if someone pastes that
+    const ucMatch = url.match(/drive\.google\.com\/uc\?.*id=([a-zA-Z0-9_-]+)/);
+    if (ucMatch && ucMatch[1]) {
+        return `https://lh3.googleusercontent.com/d/${ucMatch[1]}`;
     }
 
     // Return as-is if not a Drive link (could be Imgur, etc.)

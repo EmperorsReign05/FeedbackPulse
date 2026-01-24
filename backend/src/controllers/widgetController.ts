@@ -65,9 +65,8 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   }
 
   // Get widget settings from query params first (takes priority), then from project
-  // Decode customIcon URL since it comes URL-encoded from query params
-  const customIconUrlRaw = req.query.customIcon as string | undefined;
-  const customIconUrl = customIconUrlRaw ? decodeURIComponent(customIconUrlRaw) : undefined;
+  // Note: Express automatically decodes query params, no need for decodeURIComponent
+  const customIconUrl = req.query.customIcon as string | undefined;
 
   const icon = (req.query.icon as string) || project.widgetIcon || 'chat';
   const buttonTextRaw = req.query.text as string | undefined;
