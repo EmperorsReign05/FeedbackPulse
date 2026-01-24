@@ -23,7 +23,7 @@ export const createProjectSchema = z.object({
     name: z.string().min(2, 'Project name must be at least 2 characters'),
     // Widget customization (all optional with defaults)
     widgetIcon: widgetIconEnum.default('chat'),
-    widgetText: z.string().min(1).max(20).default('Feedback'),
+    widgetText: z.string().max(20).default('Feedback'), // Empty = icon-only mode
     widgetPrimary: z.string().regex(hexColorRegex, 'Invalid hex color').default('#2563EB'),
     widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
     widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').default('#FFFFFF'),
@@ -43,7 +43,7 @@ export const updateProjectSchema = z.object({
     name: z.string().min(2, 'Project name must be at least 2 characters').optional(),
     // Widget customization
     widgetIcon: widgetIconEnum.optional(),
-    widgetText: z.string().min(1).max(20).optional(),
+    widgetText: z.string().max(20).optional(), // Empty = icon-only mode
     widgetPrimary: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
     widgetTextColor: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),
     widgetBackground: z.string().regex(hexColorRegex, 'Invalid hex color').optional(),

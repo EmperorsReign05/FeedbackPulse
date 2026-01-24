@@ -65,9 +65,16 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   }
 
   // Get widget settings from query params first (takes priority), then from project
-  const customIconUrl = req.query.customIcon as string | undefined;
+  // Decode customIcon URL since it comes URL-encoded from query params
+  const customIconUrlRaw = req.query.customIcon as string | undefined;
+  const customIconUrl = customIconUrlRaw ? decodeURIComponent(customIconUrlRaw) : undefined;
+
   const icon = (req.query.icon as string) || project.widgetIcon || 'chat';
-  const buttonText = (req.query.text as string) || project.widgetText || 'Feedback';
+  const buttonTextRaw = req.query.text as string | undefined;
+  // Support icon-only mode: if text is empty string, don't show text
+  const buttonText = buttonTextRaw !== undefined ? buttonTextRaw : (project.widgetText || 'Feedback');
+  const showText = buttonText.length > 0;
+
   const primaryColor = (req.query.primary as string) || project.widgetPrimary || '#2563EB';
   const textColor = (req.query.textColor as string) || project.widgetTextColor || '#FFFFFF';
   const bgColor = (req.query.bg as string) || project.widgetBackground || '#FFFFFF';
@@ -80,8 +87,8 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   // Get the icon content - use custom icon URL if provided, otherwise use preset SVG
   let iconContent: string;
   if (customIconUrl) {
-    // Use custom icon as an img tag
-    iconContent = `<img src="${customIconUrl}" alt="icon" style="width:18px;height:18px;object-fit:contain;">`;
+    // Use custom icon as an img tag - add crossorigin for CORS
+    iconContent = `<img src="${customIconUrl}" alt="icon" style="width:20px;height:20px;object-fit:contain;" crossorigin="anonymous" onerror="this.style.display='none'">`;
   } else {
     // Use preset SVG icon
     iconContent = WIDGET_ICONS[icon] || WIDGET_ICONS.chat;
@@ -321,7 +328,7 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   // Create floating button
   const button = document.createElement('button');
   button.id = 'fp-widget-button';
-  button.innerHTML = '${iconContent}<span>${buttonText}</span>';
+  button.innerHTML = '${iconContent}${showText ? `<span>${buttonText}</span>` : ''}';
   button.setAttribute('aria-label', 'Open feedback form');
   button.setAttribute('aria-expanded', 'false');
   document.body.appendChild(button);

@@ -277,13 +277,13 @@ export default function ProjectSettingsPage() {
                                     name="widgetIcon"
                                     control={control}
                                     render={({ field }) => (
-                                        <div className="grid grid-cols-4 gap-2">
+                                        <div className="grid grid-cols-5 gap-2">
                                             {widgetIconOptions.map((icon) => (
                                                 <button
                                                     key={icon}
                                                     type="button"
                                                     onClick={() => field.onChange(icon)}
-                                                    className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon
+                                                    className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${field.value === icon && !customIconUrl
                                                         ? 'border-primary-500 bg-primary-50 text-primary-600'
                                                         : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                                                         }`}
@@ -291,15 +291,36 @@ export default function ProjectSettingsPage() {
                                                     {IconComponents[icon]}
                                                 </button>
                                             ))}
+                                            {/* Custom Icon Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const customInput = document.getElementById('customIconUrl');
+                                                    customInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    customInput?.focus();
+                                                }}
+                                                className={`p-3 rounded-xl border-2 transition-all flex items-center justify-center ${customIconUrl
+                                                    ? 'border-primary-500 bg-primary-50 text-primary-600'
+                                                    : 'border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                                                    }`}
+                                                title="Use custom icon URL"
+                                            >
+                                                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     )}
                                 />
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Select a preset icon or click <strong>+</strong> to use a custom image URL.
+                                </p>
                             </div>
 
                             {/* Custom Icon URL */}
-                            <div className="mb-6">
+                            <div className="mb-6" id="customIconSection">
                                 <label htmlFor="customIconUrl" className="input-label">
-                                    Custom Icon URL <span className="text-gray-400 font-normal">(Optional)</span>
+                                    Custom Icon URL <span className="text-gray-400 font-normal">(Optional - overrides preset)</span>
                                 </label>
                                 <input
                                     {...register('customIconUrl')}
@@ -318,7 +339,7 @@ export default function ProjectSettingsPage() {
                             {/* Launcher Text */}
                             <div className="mb-6">
                                 <label htmlFor="widgetText" className="input-label">
-                                    Launcher Text
+                                    Launcher Text <span className="text-gray-400 font-normal">(Leave empty for icon-only)</span>
                                 </label>
                                 <input
                                     {...register('widgetText')}
