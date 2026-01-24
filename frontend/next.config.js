@@ -31,10 +31,9 @@ const nextConfig = {
             },
         ];
     },
-    // Image optimization configuration
+    // Image optimization - use unoptimized for Netlify
     images: {
-        domains: [],
-        unoptimized: false,
+        unoptimized: true,
     },
     // Production optimizations
     poweredByHeader: false,
