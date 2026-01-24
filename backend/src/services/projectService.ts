@@ -427,4 +427,3 @@ export const getEmbedSnippet = (projectKey: string, settings?: WidgetSettings): 
 
     return `<script src="${backendUrl}/widget.js?key=${projectKey}" async></script>`;
 };
-
