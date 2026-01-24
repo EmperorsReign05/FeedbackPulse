@@ -71,8 +71,9 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
 
   const icon = (req.query.icon as string) || project.widgetIcon || 'chat';
   const buttonTextRaw = req.query.text as string | undefined;
-  // Support icon-only mode: if text is empty string, don't show text
-  const buttonText = buttonTextRaw !== undefined ? buttonTextRaw : (project.widgetText || 'Feedback');
+  // Support icon-only mode: if text param is provided (even empty), use it; otherwise use project setting
+  // No fallback to 'Feedback' if the project has no text set
+  const buttonText = buttonTextRaw !== undefined ? buttonTextRaw : (project.widgetText || '');
   const showText = buttonText.length > 0;
 
   const primaryColor = (req.query.primary as string) || project.widgetPrimary || '#2563EB';
@@ -87,8 +88,8 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   // Get the icon content - use custom icon URL if provided, otherwise use preset SVG
   let iconContent: string;
   if (customIconUrl) {
-    // Use custom icon as an img tag - add crossorigin for CORS
-    iconContent = `<img src="${customIconUrl}" alt="icon" style="width:20px;height:20px;object-fit:contain;" crossorigin="anonymous" onerror="this.style.display='none'">`;
+    // Use custom icon as an img tag - NO crossorigin attr (Google Drive blocks it)
+    iconContent = `<img src="${customIconUrl}" alt="" style="width:20px;height:20px;object-fit:contain;">`;
   } else {
     // Use preset SVG icon
     iconContent = WIDGET_ICONS[icon] || WIDGET_ICONS.chat;
