@@ -526,6 +526,36 @@ Authorization: Bearer <token>
 
 ---
 
+### DELETE /api/projects/:projectId/feedback/all
+
+Deletes all feedback for a project. User must own the project.
+
+**Headers:**
+```
+Authorization: Bearer <token>
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "data": {
+    "deleted": true,
+    "count": 42
+  }
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "success": false,
+  "error": "Project not found"
+}
+```
+
+---
+
 ## Webhook Endpoints
 
 Webhooks allow you to receive real-time notifications when new feedback is submitted.

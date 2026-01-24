@@ -48,7 +48,7 @@ Feedback Pulse is a SaaS application for collecting and managing user feedback w
                                     ▲
                                     │
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                          Frontend (Vercel)                              │
+│                      Frontend (Netlify/Vercel)                          │
 │                                                                         │
 │  ┌────────────────────────────────────────────────────────────────────┐ │
 │  │                     Next.js App Router                             │ │
@@ -504,7 +504,9 @@ The following features are now fully implemented:
 | ✅ CSV Export | Export feedback with labels to CSV format |
 | ✅ Google OAuth | Sign in with Google support |
 | ✅ Feedback Deletion | Delete individual feedback items |
+| ✅ Bulk Feedback Deletion | Delete all feedback for a project at once |
 | ✅ Project Deletion | Delete projects with cascade delete for feedback |
+| ✅ Netlify Deployment | Frontend configured for Netlify with @netlify/plugin-nextjs |
 
 ---
 

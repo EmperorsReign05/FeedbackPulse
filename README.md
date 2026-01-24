@@ -29,9 +29,9 @@ A modern SaaS application for collecting and managing user feedback with AI-powe
 | Database | PostgreSQL (Neon)                   |
 | ORM      | Prisma                              |
 | Styling  | Tailwind CSS                        |
-| Auth     | JWT, bcrypt                         |
+| Auth     | JWT, bcrypt, Google OAuth           |
 | AI       | Google Gemini API                   |
-| Deploy   | Vercel (Frontend), Render (Backend) |
+| Deploy   | Netlify (Frontend), Render (Backend)|
 
 ##  Project Structure
 
@@ -173,6 +173,7 @@ Frontend will run at `http://localhost:3000`
 | POST   | /api/public/report                   | Submit feedback (public)|
 | POST   | /api/feedback/:id/sentiment          | Analyze sentiment      |
 | DELETE | /api/feedback/:id                    | Delete feedback        |
+| DELETE | /api/projects/:id/feedback/all       | Delete all feedback    |
 
 ### Labels
 | Method | Endpoint                             | Description          |
@@ -244,6 +245,18 @@ The widget will automatically:
    - `NEXT_PUBLIC_APP_URL` (your Vercel app URL)
    - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (for Google Sign-in)
 
+### Frontend (Netlify) - Alternative
+
+1. Import project on Netlify from GitHub
+2. Set base directory to `frontend`
+3. Build command: `npm run build`
+4. Publish directory: `frontend/.next`
+5. Add environment variables:
+   - `NEXT_PUBLIC_API_BASE_URL` (your Render backend URL)
+   - `NEXT_PUBLIC_APP_URL` (your Netlify app URL)
+   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (for Google Sign-in)
+6. The `netlify.toml` file is already configured with the @netlify/plugin-nextjs
+
 ## 📖 Documentation
 
 - [API Reference](./docs/api.md) - Complete API documentation
@@ -275,7 +288,8 @@ The widget will automatically:
 - [x] CORS works correctly
 - [x] Rate limiting (API, auth, feedback endpoints)
 - [x] Code is clean with required layering
-- [x] Deployment-ready (Vercel + Render)
+- [x] Deployment-ready (Netlify/Vercel + Render)
+- [x] Delete all feedback for a project
 
 ## 🔒 Production Security Features
 
