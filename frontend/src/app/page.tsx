@@ -15,12 +15,9 @@ export default function HomePage() {
 
     return (
         <div className="min-h-screen font-sans selection:bg-black selection:text-white overflow-x-hidden">
-            {/* Main Hero Wrapper*/}
             <div className="bg-primary-500 min-h-screen relative overflow-hidden flex flex-col pt-20">
-                {/* Navbar*/}
                 <nav className="fixed top-4 left-0 right-0 z-50 px-4 md:px-6">
                     <div className="max-w-7xl mx-auto bg-white/95 backdrop-blur-md rounded-full px-6 py-3 flex items-center justify-between shadow-lg shadow-black/5 border border-white/20">
-                        {/* Left Side: Logo */}
                         <Link href="/" className="flex items-center gap-2 group">
                             <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white group-hover:scale-110 transition-transform">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,18 +27,14 @@ export default function HomePage() {
                             <span className="font-display font-bold text-xl tracking-tight text-gray-900">FeedbackPulse</span>
                         </Link>
 
-                        {/* Right Side: Links + Auth */}
                         <div className="flex items-center gap-6">
-                            {/* Desktop Links */}
                             <div className="hidden md:flex items-center gap-6 font-medium text-gray-600 text-sm">
                                 <Link href="/#features" className="hover:text-black transition-colors">Features</Link>
                                 <Link href="/#how-it-works" className="hover:text-black transition-colors">How it works</Link>
                             </div>
 
-                            {/* Separator */}
                             <div className="hidden md:block w-px h-6 bg-gray-200"></div>
 
-                            {/* Auth Buttons */}
                             <div className="flex items-center gap-3">
                                 {mounted && isLoggedIn ? (
                                     <>
@@ -76,8 +69,6 @@ export default function HomePage() {
                         </div>
                     </div>
                 </nav>
-
-                {/* Hero Content */}
                 <div className="flex-1 flex flex-col items-center justify-center text-center px-4 relative z-10 mt-10">
 
                     <h1 className="font-display font-black text-6xl md:text-8xl lg:text-9xl text-gray-900 tracking-tighter mb-6 leading-[0.9] animate-slide-up">
@@ -99,9 +90,7 @@ export default function HomePage() {
                         </Link>
                     </div>
 
-                    {/* Decorative Blobs/Avatars mimicking the "People" */}
                     <div className="absolute bottom-0 left-0 right-0 h-48 md:h-64 pointer-events-none overflow-hidden">
-                        {/* Abstract shapes representing diversity/people */}
                         <div className="absolute bottom-[-50px] left-[10%] w-32 h-32 md:w-48 md:h-48 bg-secondary-400 rounded-full animate-blob mix-blend-multiply opacity-90"></div>
                         <div className="absolute bottom-[-20px] left-[20%] w-40 h-40 md:w-56 md:h-56 bg-white rounded-full animate-blob animation-delay-2000 opacity-90"></div>
                         <div className="absolute bottom-[-60px] right-[15%] w-36 h-36 md:w-52 md:h-52 bg-secondary-500 rounded-b-none rounded-t-full rounded-l-full animate-blob animation-delay-4000 mix-blend-multiply opacity-90"></div>
@@ -109,8 +98,6 @@ export default function HomePage() {
                     </div>
                 </div>
             </div>
-
-            {/* Features Grid - Bento Style */}
             <section id="features" className="py-24 px-4 md:px-6 bg-white">
                 <div className="max-w-7xl mx-auto">
                     <div className="mb-16 text-center">
@@ -121,7 +108,6 @@ export default function HomePage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Big Feature 1 */}
                         <div className="md:col-span-2 bg-gray-50 rounded-[2rem] p-8 md:p-12 hover:bg-secondary-50 transition-colors border border-gray-100 group overflow-hidden relative">
                             <div className="relative z-10">
                                 <div className="w-14 h-14 bg-black text-white rounded-2xl flex items-center justify-center mb-6 text-2xl font-bold">
@@ -135,7 +121,6 @@ export default function HomePage() {
                             <div className="absolute right-0 bottom-0 w-64 h-64 bg-primary-200 rounded-tl-[4rem] opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
                         </div>
 
-                        {/* Tall Feature 2 */}
                         <div className="bg-black text-white rounded-[2rem] p-8 md:p-12 md:row-span-2 flex flex-col justify-between border border-gray-800 relative overflow-hidden group">
                             <div className="absolute inset-0 bg-gradient-to-br from-gray-800 to-black opacity-50"></div>
                             <div className="relative z-10">
@@ -154,7 +139,6 @@ export default function HomePage() {
                             </div>
                         </div>
 
-                        {/* Feature 3 */}
                         <div className="bg-primary-50 rounded-[2rem] p-8 md:p-12 hover:bg-primary-100 transition-colors border border-primary-100">
                             <div className="w-14 h-14 bg-primary-500 text-white rounded-2xl flex items-center justify-center mb-6">
                                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +151,6 @@ export default function HomePage() {
                             </p>
                         </div>
 
-                        {/* Feature 4 */}
                         <div className="bg-secondary-50 rounded-[2rem] p-8 md:p-12 hover:bg-secondary-100 transition-colors border border-secondary-100">
                             <div className="w-14 h-14 bg-secondary-500 text-white rounded-2xl flex items-center justify-center mb-6">
                                 <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -183,7 +166,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Marquee Section (Mockup) */}
             <div className="bg-black py-12 overflow-hidden whitespace-nowrap -rotate-1 scale-105">
                 <div className="inline-block animate-float px-4">
                     <span className="text-4xl md:text-6xl font-display font-black text-transparent stroke-text opacity-50 mx-8">FEEDBACK PULSE</span>
@@ -194,9 +176,6 @@ export default function HomePage() {
                 </div>
             </div>
 
-
-
-            {/* How it Works Section */}
             <section id="how-it-works" className="py-24 px-4 bg-black text-white relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-900/30 blur-[120px] rounded-full pointer-events-none"></div>
                 <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-secondary-900/20 blur-[120px] rounded-full pointer-events-none"></div>
@@ -213,7 +192,6 @@ export default function HomePage() {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                        {/* Step 1 */}
                         <div className="relative group">
                             <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
                                 <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">01</div>
@@ -222,11 +200,9 @@ export default function HomePage() {
                                     Sign up for an account and create your first project to get your unique API key.
                                 </p>
                             </div>
-                            {/* Connector Line (Desktop) */}
                             <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-[1px] bg-gradient-to-r from-gray-800 to-transparent"></div>
                         </div>
 
-                        {/* Step 2 */}
                         <div className="relative group">
                             <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
                                 <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">02</div>
@@ -235,11 +211,9 @@ export default function HomePage() {
                                     Copy the generated one-line script tag and paste it into your website's HTML head or body.
                                 </p>
                             </div>
-                            {/* Connector Line (Desktop) */}
                             <div className="hidden md:block absolute top-1/2 -right-6 w-12 h-[1px] bg-gradient-to-r from-gray-800 to-transparent"></div>
                         </div>
 
-                        {/* Step 3 */}
                         <div className="relative group">
                             <div className="bg-gray-900 border border-white/10 rounded-2xl p-8 hover:border-primary-500/50 transition-colors h-full">
                                 <div className="text-6xl font-display font-bold text-transparent stroke-text opacity-20 mb-6 group-hover:opacity-40 transition-opacity">03</div>
@@ -252,8 +226,6 @@ export default function HomePage() {
                     </div>
                 </div>
             </section>
-
-            {/* CTA Section */}
             <section className="py-24 px-4 bg-white">
                 <div className="max-w-4xl mx-auto text-center relative">
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-primary-500 blur-[100px] opacity-20 -z-10 rounded-full"></div>
@@ -269,7 +241,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* Footer */}
             <footer className="py-12 px-6 border-t border-gray-100 bg-gray-50">
                 <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center gap-2">
@@ -289,7 +260,6 @@ export default function HomePage() {
                 </div>
             </footer>
 
-            {/* Global Styles for Stroke Text */}
             <style jsx global>{`
                 .stroke-text {
                     -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);

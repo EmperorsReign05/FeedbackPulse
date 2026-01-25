@@ -32,13 +32,11 @@ export default function DashboardPage() {
 
     return (
         <div className="max-w-7xl mx-auto">
-            {/* Page Header */}
             <div className="page-header">
                 <h1 className="page-title">Dashboard</h1>
                 <p className="page-description">Welcome to your Feedback Pulse dashboard</p>
             </div>
 
-            {/* Stats Cards */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div className="card p-6">
                     <div className="flex items-center gap-4">
@@ -103,7 +101,6 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Quick Actions */}
             <div className="card p-6 mb-8">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
                 <div className="flex flex-wrap gap-4">
@@ -128,7 +125,6 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Recent Projects */}
             <div className="card overflow-hidden">
                 <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h2 className="text-lg font-semibold text-gray-900">Recent Projects</h2>

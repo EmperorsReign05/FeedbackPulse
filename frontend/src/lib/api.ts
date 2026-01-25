@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://feedbackpulse.onrender.com';
 const TOKEN_KEY = 'feedback_pulse_token';
 
-// Types
 export interface ApiResponse<T = any> {
     success: boolean;
     data?: T;
@@ -29,20 +28,16 @@ export interface Project {
     createdAt: string;
     feedbackCount: number;
     embedSnippet?: string;
-    // Widget customization
     widgetIcon: string;
     widgetText: string;
     widgetPrimary: string;
     widgetTextColor: string;
     widgetBackground: string;
     widgetPosition: string;
-    // Custom icon URL
     customIconUrl?: string | null;
-    // Domain restriction
     allowedDomains?: string | null;
 }
 
-// Widget settings for creating/updating projects
 export interface WidgetSettings {
     widgetIcon?: string;
     widgetText?: string;
@@ -79,7 +74,6 @@ export interface PaginatedFeedback {
     totalPages: number;
 }
 
-// Token management
 export const getToken = (): string | null => {
     if (typeof window === 'undefined') {
         return null;
@@ -99,7 +93,6 @@ export const isAuthenticated = (): boolean => {
     return !!getToken();
 };
 
-// API request helper
 async function apiRequest<T>(
     endpoint: string,
     options: RequestInit = {}
@@ -141,7 +134,6 @@ async function apiRequest<T>(
     }
 }
 
-// Auth API
 export const authApi = {
     signup: (email: string, password: string) =>
         apiRequest<AuthResponse>('/api/auth/signup', {
@@ -164,7 +156,6 @@ export const authApi = {
         }),
 };
 
-// Projects API
 export const projectsApi = {
     list: () => apiRequest<Project[]>('/api/projects'),
 
@@ -197,7 +188,6 @@ export const projectsApi = {
         }),
 };
 
-// Feedback API
 export const feedbackApi = {
     list: (projectId: string, page = 1, limit = 10, type = 'All') =>
         apiRequest<PaginatedFeedback>(
@@ -221,7 +211,6 @@ export const feedbackApi = {
         }),
 };
 
-// Labels API
 export const labelsApi = {
     add: (feedbackId: string, label: string) =>
         apiRequest<Label>(`/api/feedback/${feedbackId}/labels`, {
@@ -235,14 +224,12 @@ export const labelsApi = {
         }),
 };
 
-// Webhook settings type
 export interface WebhookSettings {
     webhookUrl: string | null;
     webhookSecret: string | null;
     webhookEnabled: boolean;
 }
 
-// Webhooks API
 export const webhooksApi = {
     get: (projectId: string) =>
         apiRequest<WebhookSettings>(`/api/projects/${projectId}/webhook`),
@@ -264,7 +251,6 @@ export const webhooksApi = {
         }),
 };
 
-// Server-side API helper (for SSR)
 export const serverApiRequest = async <T>(
     endpoint: string,
     token?: string

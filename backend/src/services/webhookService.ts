@@ -24,28 +24,20 @@ export interface WebhookConfig {
     projectName: string;
 }
 
-/**
- * Generates a secure webhook secret
- * Format: whsec_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX (32 random characters)
- */
 export const generateWebhookSecret = (): string => {
     const randomBytes = crypto.randomBytes(24);
     const base64 = randomBytes.toString('base64url').substring(0, 32);
     return `whsec_${base64}`;
 };
 
-/**
- * Creates HMAC-SHA256 signature for webhook payload
- */
+
 export const createSignature = (payload: string, secret: string): string => {
     const hmac = crypto.createHmac('sha256', secret);
     hmac.update(payload);
     return `sha256=${hmac.digest('hex')}`;
 };
 
-/**
- * Verifies webhook signature (for testing or future use)
- */
+
 export const verifySignature = (
     payload: string,
     signature: string,
@@ -58,10 +50,7 @@ export const verifySignature = (
     );
 };
 
-/**
- * Sends a webhook notification
- * Returns true if successful, false otherwise
- */
+
 export const sendWebhook = async (
     config: WebhookConfig,
     feedback: {
@@ -93,7 +82,6 @@ export const sendWebhook = async (
         const payloadString = JSON.stringify(payload);
         const signature = createSignature(payloadString, config.webhookSecret);
 
-        // Set a timeout for the webhook request
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
@@ -130,9 +118,7 @@ export const sendWebhook = async (
     }
 };
 
-/**
- * Validates webhook URL format
- */
+
 export const isValidWebhookUrl = (url: string): boolean => {
     try {
         const parsed = new URL(url);

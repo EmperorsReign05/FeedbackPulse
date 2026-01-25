@@ -24,7 +24,6 @@ export interface PaginatedFeedback {
     totalPages: number;
 }
 
-// Submits feedback from the widget (public endpoint)
 export const submitFeedback = async (
     projectId: string,
     input: Omit<SubmitFeedbackInput, 'projectKey'>
@@ -49,7 +48,7 @@ export const submitFeedback = async (
     return feedback;
 };
 
-// Gets paginated feedback for a project
+
 export const getFeedback = async (
     projectId: string,
     query: FeedbackQueryInput
@@ -57,16 +56,13 @@ export const getFeedback = async (
     const { page, limit, type } = query;
     const skip = (page - 1) * limit;
 
-    // Build where clause
     const where: any = { projectId };
     if (type !== 'All') {
         where.type = type as FeedbackType;
     }
 
-    // Get total count
     const total = await prisma.feedback.count({ where });
 
-    // Get paginated feedback
     const feedback = await prisma.feedback.findMany({
         where,
         include: {
@@ -93,7 +89,7 @@ export const getFeedback = async (
     };
 };
 
-// Gets a single feedback by ID
+
 export const getFeedbackById = async (
     feedbackId: string
 ): Promise<FeedbackWithLabels | null> => {
@@ -111,7 +107,7 @@ export const getFeedbackById = async (
     });
 };
 
-// Verifies that a feedback belongs to a user's project
+
 export const verifyFeedbackOwnership = async (
     feedbackId: string,
     userId: string
@@ -128,9 +124,7 @@ export const verifyFeedbackOwnership = async (
     return feedback?.project.userId === userId;
 };
 
-/**
- * Updates sentiment for a feedback
- */
+
 export const updateSentiment = async (
     feedbackId: string,
     sentiment: Sentiment
@@ -150,22 +144,19 @@ export const updateSentiment = async (
     });
 };
 
-// Deletes a feedback by ID (also deletes associated labels via cascade)
+
 export const deleteFeedback = async (feedbackId: string): Promise<void> => {
-    // First delete associated labels
     await prisma.feedbackLabel.deleteMany({
         where: { feedbackId },
     });
 
-    // Then delete the feedback
     await prisma.feedback.delete({
         where: { id: feedbackId },
     });
 };
 
-// Deletes all feedback for a project (also deletes associated labels)
+
 export const deleteAllFeedback = async (projectId: string): Promise<number> => {
-    // Get all feedback IDs for the project
     const feedbackItems = await prisma.feedback.findMany({
         where: { projectId },
         select: { id: true },
@@ -177,12 +168,10 @@ export const deleteAllFeedback = async (projectId: string): Promise<number> => {
         return 0;
     }
 
-    // First delete all associated labels
     await prisma.feedbackLabel.deleteMany({
         where: { feedbackId: { in: feedbackIds } },
     });
 
-    // Then delete all feedback
     const result = await prisma.feedback.deleteMany({
         where: { projectId },
     });

@@ -3,7 +3,6 @@ import { labelService, feedbackService } from '../services';
 import { addLabelSchema } from '../utils/validation';
 
 // POST /api/feedback/:feedbackId/labels
-// Adds a label to a feedback
 export const addLabel = async (
     req: Request,
     res: Response,
@@ -47,7 +46,6 @@ export const addLabel = async (
 };
 
 // DELETE /api/feedback/:feedbackId/labels/:labelId
-// Removes a label from a feedback
 export const removeLabel = async (
     req: Request,
     res: Response,
@@ -98,7 +96,6 @@ export const removeLabel = async (
 };
 
 // GET /api/feedback/:feedbackId/labels
-// Gets all labels for a feedback
 export const getLabels = async (
     req: Request,
     res: Response,

@@ -1,8 +1,6 @@
 import cors from 'cors';
 import config from '../config';
 
-//cors configuration
-
 // CORS for public routes
 // Allows all origins for cross-domain widget usage
 export const publicCors = cors({
@@ -28,6 +26,7 @@ export const protectedCors = cors({
             'http://localhost:3000',
             'http://127.0.0.1:3000',
             'https://feedback-pulse-murex.vercel.app',
+            'https://feedbackpulse-me.netlify.app'
         ];
 
         if (allowedOrigins.includes(origin) || config.nodeEnv === 'development') {

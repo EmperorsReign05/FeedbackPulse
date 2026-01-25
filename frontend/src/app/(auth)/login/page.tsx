@@ -40,10 +40,8 @@ export default function LoginPage() {
 
     return (
         <div className="min-h-screen flex">
-            {/* Left Side - Form */}
             <div className="flex-1 flex flex-col justify-center px-8 lg:px-16 xl:px-24">
                 <div className="max-w-md w-full mx-auto">
-                    {/* Logo */}
                     <Link href="/" className="inline-flex items-center gap-3 mb-12">
                         <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary-500/30">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +51,6 @@ export default function LoginPage() {
                         <span className="text-2xl font-display font-bold text-gray-900 tracking-tight">Feedback Pulse</span>
                     </Link>
 
-                    {/* Header */}
                     <div className="mb-8">
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
                         <p className="text-gray-600">
@@ -61,14 +58,12 @@ export default function LoginPage() {
                         </p>
                     </div>
 
-                    {/* Error Message */}
                     {error && (
                         <div className="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm animate-slide-down">
                             {error}
                         </div>
                     )}
 
-                    {/* Form */}
                     <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                             <div>
@@ -169,7 +164,6 @@ export default function LoginPage() {
                         </form>
                     </GoogleOAuthProvider>
 
-                    {/* Footer */}
                     <p className="mt-8 text-center text-gray-600">
                         Don't have an account?{' '}
                         <Link href="/signup" className="text-primary-600 font-medium hover:text-primary-700">
@@ -178,8 +172,6 @@ export default function LoginPage() {
                     </p>
                 </div>
             </div>
-
-            {/* Right Side - Decorative */}
             <div className="hidden lg:flex flex-1 bg-gradient-to-br from-primary-900 to-black items-center justify-center p-12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
                 <div className="max-w-lg text-center text-white relative z-10">

@@ -52,7 +52,6 @@ export default function ProjectsPage() {
 
     return (
         <div className="max-w-7xl mx-auto">
-            {/* Page Header */}
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h1 className="page-title">Projects</h1>
@@ -66,7 +65,6 @@ export default function ProjectsPage() {
                 </Link>
             </div>
 
-            {/* Projects Grid */}
             {isLoading ? (
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -134,7 +132,6 @@ export default function ProjectsPage() {
                                 </div>
                             </Link>
 
-                            {/* Delete Button */}
                             <button
                                 onClick={(e) => handleDeleteClick(e, project)}
                                 className="absolute top-14 right-6 p-2 bg-red-50 text-red-500 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-all duration-200"
@@ -147,7 +144,6 @@ export default function ProjectsPage() {
                         </div>
                     ))}
 
-                    {/* Add New Project Card */}
                     <Link
                         href="/dashboard/projects/new"
                         className="card p-6 border-2 border-dashed border-gray-200 hover:border-primary-300 hover:bg-primary-50/50 transition-all duration-200 flex flex-col items-center justify-center min-h-[200px]"
@@ -162,7 +158,6 @@ export default function ProjectsPage() {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
             {deleteModal.isOpen && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-slide-up">

@@ -8,7 +8,6 @@ export interface LabelData {
     createdAt: Date;
 }
 
-// Adds a label to a feedback
 export const addLabel = async (
     feedbackId: string,
     label: string
@@ -28,7 +27,7 @@ export const addLabel = async (
     return feedbackLabel;
 };
 
-// Removes a label from a feedback
+
 export const removeLabel = async (
     labelId: string,
     feedbackId: string
@@ -46,7 +45,7 @@ export const removeLabel = async (
     }
 };
 
-// Gets all labels for a feedback
+
 export const getLabelsForFeedback = async (
     feedbackId: string
 ): Promise<LabelData[]> => {

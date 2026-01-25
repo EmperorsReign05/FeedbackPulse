@@ -6,7 +6,6 @@ import {
 } from '../utils/validation';
 
 // POST /api/public/feedback
-// Submits feedback from the widget (public endpoint)
 export const submitFeedback = async (
     req: Request,
     res: Response,
@@ -67,7 +66,6 @@ export const submitFeedback = async (
 
 
 // GET /api/projects/:projectId/feedback
-// Gets paginated feedback for a project
 export const getFeedback = async (
     req: Request,
     res: Response,
@@ -109,7 +107,6 @@ export const getFeedback = async (
 };
 
 // POST /api/feedback/:feedbackId/sentiment
-// Analyzes sentiment using Gemini API
 export const analyzeSentiment = async (
     req: Request,
     res: Response,
@@ -171,7 +168,6 @@ export const analyzeSentiment = async (
 };
 
 // DELETE /api/feedback/:feedbackId
-// Deletes a feedback item
 export const deleteFeedback = async (
     req: Request,
     res: Response,
@@ -215,7 +211,6 @@ export const deleteFeedback = async (
 };
 
 // DELETE /api/projects/:projectId/feedback/all
-// Deletes all feedback for a project
 export const deleteAllFeedback = async (
     req: Request,
     res: Response,

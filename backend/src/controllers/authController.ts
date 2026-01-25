@@ -3,7 +3,6 @@ import { authService } from '../services';
 import { signupSchema, loginSchema } from '../utils/validation';
 
 // POST /api/auth/signup
-// Registers a new user
 export const signup = async (
     req: Request,
     res: Response,
@@ -34,7 +33,6 @@ export const signup = async (
 };
 
 // POST /api/auth/login
-// Authenticates a user
 export const login = async (
     req: Request,
     res: Response,
@@ -65,7 +63,6 @@ export const login = async (
 };
 
 // GET /api/auth/me
-// Gets current user info
 export const me = async (
     req: Request,
     res: Response,
@@ -100,7 +97,6 @@ export const me = async (
 };
 
 // POST /api/auth/google
-// Authenticates with Google
 export const googleLogin = async (
     req: Request,
     res: Response,

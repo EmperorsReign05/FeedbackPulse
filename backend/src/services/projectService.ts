@@ -105,15 +105,13 @@ export const isOriginAllowed = (origin: string | undefined, allowedDomains: stri
     return false;
 };
 
-// Creates a new project for a user
+
 export const createProject = async (
     userId: string,
     input: CreateProjectInput
 ): Promise<ProjectWithStats> => {
-    // Generate unique project key
     let projectKey = generateProjectKey();
 
-    // Ensure uniqueness (very unlikely to collide, but check anyway)
     let attempts = 0;
     while (attempts < 5) {
         const existing = await prisma.project.findUnique({
@@ -148,7 +146,7 @@ export const createProject = async (
     };
 };
 
-// Lists all projects for a user with feedback counts
+
 export const listProjects = async (userId: string): Promise<ProjectWithStats[]> => {
     const projects = await prisma.project.findMany({
         where: { userId },
@@ -177,7 +175,7 @@ export const listProjects = async (userId: string): Promise<ProjectWithStats[]> 
     }));
 };
 
-// Gets a single project by ID (verifies ownership)
+
 export const getProject = async (
     projectId: string,
     userId: string
@@ -213,19 +211,18 @@ export const getProject = async (
     };
 };
 
-// Gets project by projectKey (for public widget use)
+
 export const getProjectByKey = async (projectKey: string) => {
     return prisma.project.findUnique({
         where: { projectKey },
     });
 };
 
-// Deletes a project (verifies ownership) - cascades to feedback
+
 export const deleteProject = async (
     projectId: string,
     userId: string
 ): Promise<boolean> => {
-    // First verify ownership
     const project = await prisma.project.findFirst({
         where: {
             id: projectId,
@@ -237,7 +234,6 @@ export const deleteProject = async (
         return false;
     }
 
-    // Delete the project (feedback will cascade delete per schema)
     await prisma.project.delete({
         where: { id: projectId },
     });
@@ -245,13 +241,12 @@ export const deleteProject = async (
     return true;
 };
 
-// Updates a project's settings (verifies ownership)
+
 export const updateProject = async (
     projectId: string,
     userId: string,
     input: UpdateProjectInput
 ): Promise<ProjectWithStats | null> => {
-    // First verify ownership
     const existing = await prisma.project.findFirst({
         where: {
             id: projectId,
@@ -263,7 +258,6 @@ export const updateProject = async (
         return null;
     }
 
-    // Build update data, only including provided fields
     const updateData: Record<string, unknown> = {};
     if (input.name !== undefined) updateData.name = input.name;
     if (input.widgetIcon !== undefined) updateData.widgetIcon = input.widgetIcon;
@@ -304,12 +298,11 @@ export const updateProject = async (
     };
 };
 
-// Regenerates project key (verifies ownership)
+
 export const regenerateProjectKey = async (
     projectId: string,
     userId: string
 ): Promise<ProjectWithStats | null> => {
-    // First verify ownership
     const existing = await prisma.project.findFirst({
         where: {
             id: projectId,
@@ -321,7 +314,6 @@ export const regenerateProjectKey = async (
         return null;
     }
 
-    // Generate new unique key
     let newProjectKey = generateProjectKey();
     let attempts = 0;
     while (attempts < 5) {
@@ -360,7 +352,6 @@ export const regenerateProjectKey = async (
     };
 };
 
-// Widget settings interface for embed snippet
 export interface WidgetSettings {
     widgetIcon: string;
     widgetText: string;
@@ -394,15 +385,12 @@ const convertGoogleDriveUrl = (url: string): string => {
     return url;
 };
 
-// Generates the embed snippet for a project
 export const getEmbedSnippet = (projectKey: string, settings?: WidgetSettings): string => {
     const backendUrl = config.isProduction
         ? process.env.BACKEND_URL || 'https://feedbackpulse.onrender.com'
         : `http://localhost:${config.port}`;
 
-    // If settings provided, include them as query params for the widget
     if (settings) {
-        // Start with base params (always included)
         const params = new URLSearchParams({
             key: projectKey,
             text: settings.widgetText,
@@ -412,13 +400,10 @@ export const getEmbedSnippet = (projectKey: string, settings?: WidgetSettings): 
             pos: settings.widgetPosition,
         });
 
-        // Only include ONE of: customIcon OR preset icon (customIcon takes priority)
         if (settings.customIconUrl) {
             const directUrl = convertGoogleDriveUrl(settings.customIconUrl);
             params.set('customIcon', directUrl);
-            // Note: preset 'icon' is NOT included when customIcon is provided
         } else {
-            // Only add preset icon if no custom icon
             params.set('icon', settings.widgetIcon);
         }
 

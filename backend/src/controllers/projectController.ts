@@ -3,7 +3,6 @@ import { projectService } from '../services';
 import { createProjectSchema, updateProjectSchema } from '../utils/validation';
 
 // POST /api/projects
-// Creates a new project
 export const createProject = async (
     req: Request,
     res: Response,
@@ -42,7 +41,6 @@ export const createProject = async (
 };
 
 // GET /api/projects
-// Lists all projects for the current user
 export const listProjects = async (
     req: Request,
     res: Response,
@@ -69,7 +67,6 @@ export const listProjects = async (
 };
 
 // GET /api/projects/:projectId
-// Gets a single project by ID
 export const getProject = async (
     req: Request,
     res: Response,
@@ -116,7 +113,6 @@ export const getProject = async (
 };
 
 // DELETE /api/projects/:projectId
-// Deletes a project by ID
 export const deleteProject = async (
     req: Request,
     res: Response,
@@ -152,7 +148,6 @@ export const deleteProject = async (
 };
 
 // PUT /api/projects/:projectId
-// Updates a project's settings
 export const updateProject = async (
     req: Request,
     res: Response,
@@ -200,7 +195,6 @@ export const updateProject = async (
 };
 
 // POST /api/projects/:projectId/regenerate-key
-// Regenerates the project's API key
 export const regenerateProjectKey = async (
     req: Request,
     res: Response,

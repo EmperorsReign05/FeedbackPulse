@@ -12,7 +12,6 @@ const webhookSettingsSchema = z.object({
 });
 
 // GET /api/projects/:projectId/webhook
-// Gets webhook settings for a project
 export const getWebhookSettings = async (
     req: Request,
     res: Response,
@@ -65,7 +64,6 @@ export const getWebhookSettings = async (
 };
 
 // PUT /api/projects/:projectId/webhook
-// Updates webhook settings for a project
 export const updateWebhookSettings = async (
     req: Request,
     res: Response,
@@ -155,7 +153,6 @@ export const updateWebhookSettings = async (
 };
 
 // POST /api/projects/:projectId/webhook/regenerate-secret
-// Regenerates the webhook secret
 export const regenerateWebhookSecret = async (
     req: Request,
     res: Response,
@@ -217,7 +214,6 @@ export const regenerateWebhookSecret = async (
 };
 
 // POST /api/projects/:projectId/webhook/test
-// Sends a test webhook
 export const testWebhook = async (
     req: Request,
     res: Response,

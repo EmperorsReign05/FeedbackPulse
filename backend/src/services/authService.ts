@@ -18,13 +18,9 @@ export interface AuthResult {
     error?: string;
 }
 
-/**
- * Registers a new user with email and password
- */
 export const signup = async (input: SignupInput): Promise<AuthResult> => {
     const { email, password } = input;
 
-    // Check if user already exists
     const existingUser = await prisma.user.findUnique({
         where: { email },
     });
@@ -36,10 +32,8 @@ export const signup = async (input: SignupInput): Promise<AuthResult> => {
         };
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
 
-    // Create user
     const user = await prisma.user.create({
         data: {
             email,
@@ -47,7 +41,6 @@ export const signup = async (input: SignupInput): Promise<AuthResult> => {
         },
     });
 
-    // Generate token
     const tokenPayload: TokenPayload = {
         userId: user.id,
         email: user.email,
@@ -64,13 +57,9 @@ export const signup = async (input: SignupInput): Promise<AuthResult> => {
     };
 };
 
-/**
- * Authenticates a user with email and password
- */
 export const login = async (input: LoginInput): Promise<AuthResult> => {
     const { email, password } = input;
 
-    // Find user
     const user = await prisma.user.findUnique({
         where: { email },
     });
@@ -82,7 +71,6 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
         };
     }
 
-    // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
@@ -92,7 +80,6 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
         };
     }
 
-    // Generate token
     const tokenPayload: TokenPayload = {
         userId: user.id,
         email: user.email,
@@ -109,9 +96,6 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
     };
 };
 
-/**
- * Authenticates a user with Google ID Token
- */
 export const googleLogin = async (idToken: string): Promise<AuthResult> => {
     try {
         const ticket = await client.verifyIdToken({
@@ -129,13 +113,11 @@ export const googleLogin = async (idToken: string): Promise<AuthResult> => {
 
         const { email, sub: googleId } = payload;
 
-        // Check if user exists
         let user = await prisma.user.findUnique({
             where: { email },
         });
 
         if (!user) {
-            // Create new user
             user = await prisma.user.create({
                 data: {
                     email,
@@ -143,14 +125,12 @@ export const googleLogin = async (idToken: string): Promise<AuthResult> => {
                 },
             });
         } else if (!user.googleId) {
-            // Link Google ID to existing user
             user = await prisma.user.update({
                 where: { id: user.id },
                 data: { googleId },
             });
         }
 
-        // Generate token
         const tokenPayload: TokenPayload = {
             userId: user.id,
             email: user.email,
@@ -174,9 +154,6 @@ export const googleLogin = async (idToken: string): Promise<AuthResult> => {
     }
 };
 
-/**
- * Gets user by ID (for /me endpoint)
- */
 export const getUserById = async (userId: string) => {
     const user = await prisma.user.findUnique({
         where: { id: userId },

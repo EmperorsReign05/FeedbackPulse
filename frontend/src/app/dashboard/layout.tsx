@@ -21,7 +21,6 @@ export default function DashboardLayout({
             return;
         }
 
-        // Fetch user info
         authApi.me().then((response) => {
             if (response.success && response.data) {
                 setUser(response.data);
@@ -57,7 +56,6 @@ export default function DashboardLayout({
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Mobile Sidebar Overlay */}
             {sidebarOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -65,12 +63,10 @@ export default function DashboardLayout({
                 />
             )}
 
-            {/* Sidebar */}
             <aside
                 className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-100 transform transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
-                {/* Logo */}
                 <div className="p-6 border-b border-gray-100">
                     <Link href="/dashboard" className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
@@ -82,7 +78,6 @@ export default function DashboardLayout({
                     </Link>
                 </div>
 
-                {/* Navigation */}
                 <nav className="p-4 space-y-1">
                     {navItems.map((item) => (
                         <Link
@@ -97,7 +92,6 @@ export default function DashboardLayout({
                     ))}
                 </nav>
 
-                {/* User Info & Logout */}
                 <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
                     {user && (
                         <div className="mb-3 px-4 py-2">
@@ -116,12 +110,9 @@ export default function DashboardLayout({
                 </div>
             </aside>
 
-            {/* Main Content */}
             <div className="lg:pl-64">
-                {/* Top Navbar */}
                 <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-100">
                     <div className="px-6 py-4 flex items-center gap-4">
-                        {/* Mobile Menu Button */}
                         <button
                             onClick={() => setSidebarOpen(true)}
                             className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
@@ -131,10 +122,8 @@ export default function DashboardLayout({
                             </svg>
                         </button>
 
-                        {/* Breadcrumb Placeholder */}
                         <div className="flex-1" />
 
-                        {/* Quick Actions */}
                         <Link
                             href="/dashboard/projects/new"
                             className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary-50 text-primary-700 font-medium rounded-xl hover:bg-primary-100 transition-colors"
@@ -147,7 +136,6 @@ export default function DashboardLayout({
                     </div>
                 </header>
 
-                {/* Page Content */}
                 <main className="p-6">{children}</main>
             </div>
         </div>

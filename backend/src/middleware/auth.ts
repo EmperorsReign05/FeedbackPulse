@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { extractTokenFromHeader, verifyToken, TokenPayload } from '../utils/jwt';
 
-// Extend Express Request to include user
 declare global {
     namespace Express {
         interface Request {
@@ -10,8 +9,6 @@ declare global {
     }
 }
 
-// Authentication middleware that protects routes
-// Extracts and verifies JWT token from Authorization header
 export const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
     const token = extractTokenFromHeader(req.headers.authorization);
 

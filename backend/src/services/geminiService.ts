@@ -11,7 +11,6 @@ interface GeminiResponse {
     }[];
 }
 
-// Analyzes sentiment of text using Gemini API
 export const analyzeSentiment = async (text: string): Promise<Sentiment> => {
     if (!config.geminiApiKey) {
         throw new Error('Gemini API key not configured');
