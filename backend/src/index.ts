@@ -25,6 +25,7 @@ app.use(helmet({
     contentSecurityPolicy: false, // Disabled to allow widget embedding
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow widget to be loaded cross-origin
+    frameguard: false, // Disabled to allow widget.html to be embedded in iframes from any domain
 }));
 
 // Rate limiting for API endpoints
