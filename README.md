@@ -265,10 +265,10 @@ The widget will automatically:
 
 ## 🔗 Live Demo
 
-- **Frontend**: [https://feedback-pulse-murex.vercel.app](https://feedback-pulse-murex.vercel.app)
+- **Frontend**: [https://feedbackpulse-me.netlify.app](https://feedbackpulse-me.netlify.app)
 - **Backend**: [https://feedbackpulse.onrender.com](https://feedbackpulse.onrender.com)
 
-## ✅ Definition of Done
+## Definition of Done
 
 - [x] User can sign up and login
 - [x] Google OAuth sign-in support
@@ -291,7 +291,7 @@ The widget will automatically:
 - [x] Deployment-ready (Netlify/Vercel + Render)
 - [x] Delete all feedback for a project
 
-## 🔒 Production Security Features
+##  Production Security Features
 
 - **Helmet.js** - Security headers (XSS, CSRF, clickjacking protection)
 - **Rate Limiting** - Prevents API abuse and brute force attacks
