@@ -14,29 +14,37 @@ const WIDGET_ICONS: Record<string, string> = {
   info: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>',
 };
 
-// Position CSS mappings
-const POSITION_STYLES: Record<string, { button: string; modal: string }> = {
-  'top-left': {
-    button: 'top: 24px; left: 24px; bottom: auto; right: auto;',
-    modal: 'top: 100px; left: 24px; bottom: auto; right: auto; transform-origin: top left;'
-  },
-  'top-right': {
-    button: 'top: 24px; right: 24px; bottom: auto; left: auto;',
-    modal: 'top: 100px; right: 24px; bottom: auto; left: auto; transform-origin: top right;'
-  },
-  'bottom-left': {
-    button: 'bottom: 24px; left: 24px; top: auto; right: auto;',
-    modal: 'bottom: 100px; left: 24px; top: auto; right: auto; transform-origin: bottom left;'
-  },
-  'bottom-right': {
-    button: 'bottom: 24px; right: 24px; top: auto; left: auto;',
-    modal: 'bottom: 100px; right: 24px; top: auto; left: auto; transform-origin: bottom right;'
-  },
+// Position CSS mappings for the floating button
+const BUTTON_POSITIONS: Record<string, string> = {
+  'top-left': 'top: 24px; left: 24px; bottom: auto; right: auto;',
+  'top-right': 'top: 24px; right: 24px; bottom: auto; left: auto;',
+  'bottom-left': 'bottom: 24px; left: 24px; top: auto; right: auto;',
+  'bottom-right': 'bottom: 24px; right: 24px; top: auto; left: auto;',
 };
+
+// Position CSS mappings for the iframe
+const IFRAME_POSITIONS: Record<string, string> = {
+  'top-left': 'top: 90px; left: 24px; bottom: auto; right: auto;',
+  'top-right': 'top: 90px; right: 24px; bottom: auto; left: auto;',
+  'bottom-left': 'bottom: 90px; left: 24px; top: auto; right: auto;',
+  'bottom-right': 'bottom: 90px; right: 24px; top: auto; left: auto;',
+};
+
+// Helper function to convert hex to RGB
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result
+    ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
+    : null;
+}
 
 /**
  * GET /widget.js
- * Serves the widget JavaScript file with customization
+ * Serves the widget JavaScript file that creates a floating button and iframe
  */
 export const serveWidget = async (req: Request, res: Response): Promise<void> => {
   const projectKey = req.query.key as string;
@@ -65,19 +73,14 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   }
 
   // Get widget settings from query params first (takes priority), then from project
-  // Note: Express automatically decodes query params, no need for decodeURIComponent
   const customIconUrl = req.query.customIcon as string | undefined;
-
   const icon = (req.query.icon as string) || project.widgetIcon || 'chat';
   const buttonTextRaw = req.query.text as string | undefined;
-  // Support icon-only mode: if text param is provided (even empty), use it; otherwise use project setting
-  // No fallback to 'Feedback' if the project has no text set
   const buttonText = buttonTextRaw !== undefined ? buttonTextRaw : (project.widgetText || '');
   const showText = buttonText.length > 0;
 
   const primaryColor = (req.query.primary as string) || project.widgetPrimary || '#2563EB';
   const textColor = (req.query.textColor as string) || project.widgetTextColor || '#FFFFFF';
-  const bgColor = (req.query.bg as string) || project.widgetBackground || '#FFFFFF';
   const position = (req.query.pos as string) || project.widgetPosition || 'bottom-right';
 
   const backendUrl = config.isProduction
@@ -87,21 +90,28 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   // Get the icon content - use custom icon URL if provided, otherwise use preset SVG
   let iconContent: string;
   if (customIconUrl) {
-    // Use custom icon as an img tag - NO crossorigin attr (Google Drive blocks it)
     iconContent = `<img src="${customIconUrl}" alt="" style="width:20px;height:20px;object-fit:contain;">`;
   } else {
-    // Use preset SVG icon
     iconContent = WIDGET_ICONS[icon] || WIDGET_ICONS.chat;
   }
 
   // Get position styles
-  const posStyles = POSITION_STYLES[position] || POSITION_STYLES['bottom-right'];
+  const buttonPos = BUTTON_POSITIONS[position] || BUTTON_POSITIONS['bottom-right'];
+  const iframePos = IFRAME_POSITIONS[position] || IFRAME_POSITIONS['bottom-right'];
 
   // Generate primary color with alpha for focus states
   const primaryRgb = hexToRgb(primaryColor);
-  const primaryFocus = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.15)` : 'rgba(37, 99, 235, 0.15)';
   const primaryShadow = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.4)` : 'rgba(37, 99, 235, 0.4)';
   const primaryShadowHover = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.5)` : 'rgba(37, 99, 235, 0.5)';
+  const primaryFocus = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.15)` : 'rgba(37, 99, 235, 0.15)';
+
+  // Build iframe URL with all params
+  const iframeParams = new URLSearchParams({
+    key: projectKey,
+    primary: primaryColor,
+    textColor: textColor,
+    bg: (req.query.bg as string) || project.widgetBackground || '#FFFFFF',
+  });
 
   const widgetJs = `
 (function() {
@@ -109,372 +119,138 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   if (window.__feedbackPulseLoaded) return;
   window.__feedbackPulseLoaded = true;
 
-  const PROJECT_KEY = '${projectKey}';
-  const API_URL = '${backendUrl}/api/public/report';
+  var IFRAME_URL = '${backendUrl}/widget.html?${iframeParams.toString()}';
 
-  // Configuration
-  const CONFIG = {
-    primaryColor: '${primaryColor}',
-    textColor: '${textColor}',
-    bgColor: '${bgColor}',
-    buttonText: '${buttonText}',
-    primaryFocus: '${primaryFocus}',
-    primaryShadow: '${primaryShadow}',
-    primaryShadowHover: '${primaryShadowHover}',
-  };
-
-  // Styles
-  const styles = \`
-    #fp-widget-container {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      position: fixed;
-      z-index: 999998;
+  // Minimal styles for the button only (no CSS conflicts possible)
+  var style = document.createElement('style');
+  style.textContent = \`
+    #fp-widget-btn {
+      all: initial;
+      position: fixed !important;
+      ${buttonPos}
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 8px !important;
+      padding: 12px 20px !important;
+      border-radius: 9999px !important;
+      background: ${primaryColor} !important;
+      color: ${textColor} !important;
+      border: none !important;
+      cursor: pointer !important;
+      box-shadow: 0 4px 20px ${primaryShadow} !important;
+      transition: transform 0.2s, box-shadow 0.2s !important;
+      z-index: 2147483646 !important;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      box-sizing: border-box !important;
     }
-    #fp-widget-button {
-      position: fixed;
-      ${posStyles.button}
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px 20px;
-      border-radius: 9999px;
-      background: \${CONFIG.primaryColor};
-      color: \${CONFIG.textColor};
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 20px \${CONFIG.primaryShadow};
-      transition: transform 0.2s, box-shadow 0.2s;
-      z-index: 999998;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 600;
+    #fp-widget-btn:hover {
+      transform: scale(1.05) !important;
+      box-shadow: 0 6px 25px ${primaryShadowHover} !important;
     }
-    #fp-widget-button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 25px \${CONFIG.primaryShadowHover};
+    #fp-widget-btn:focus {
+      outline: none !important;
+      box-shadow: 0 0 0 4px ${primaryFocus} !important;
     }
-    #fp-widget-button:focus {
-      outline: none;
-      box-shadow: 0 0 0 4px \${CONFIG.primaryFocus};
+    #fp-widget-btn svg {
+      width: 18px !important;
+      height: 18px !important;
+      fill: ${textColor} !important;
+      flex-shrink: 0 !important;
     }
-    #fp-widget-button svg {
-      width: 18px;
-      height: 18px;
-      fill: \${CONFIG.textColor};
-      flex-shrink: 0;
+    #fp-widget-btn span {
+      color: ${textColor} !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
     }
-    #fp-widget-modal {
-      position: fixed;
-      ${posStyles.modal}
-      width: 340px;
-      max-width: calc(100vw - 48px);
-      background: \${CONFIG.bgColor};
-      border-radius: 16px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      padding: 24px;
-      opacity: 0;
-      visibility: hidden;
-      transform: scale(0.95);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 999999;
-      border: 1px solid #e2e8f0;
+    #fp-widget-iframe {
+      all: initial;
+      position: fixed !important;
+      ${iframePos}
+      width: 380px !important;
+      height: 420px !important;
+      max-width: calc(100vw - 48px) !important;
+      border: none !important;
+      border-radius: 16px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      z-index: 2147483647 !important;
+      opacity: 0 !important;
+      visibility: hidden !important;
+      transform: scale(0.95) !important;
+      transition: opacity 0.2s, visibility 0.2s, transform 0.2s !important;
+      background: #fff !important;
     }
-    #fp-widget-modal.fp-open {
-      opacity: 1;
-      visibility: visible;
-      transform: scale(1);
-    }
-    #fp-widget-modal h3 {
-      margin: 0 0 4px 0;
-      font-size: 18px;
-      font-weight: 700;
-      color: #1e293b;
-      font-family: inherit;
-    }
-    #fp-widget-modal .fp-desc {
-      margin: 0 0 20px 0;
-      font-size: 14px;
-      color: #64748b;
-      line-height: 1.4;
-      font-weight: 500;
-    }
-    #fp-widget-modal label {
-      display: block;
-      font-size: 12px;
-      font-weight: 700;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 6px;
-    }
-    #fp-widget-modal select,
-    #fp-widget-modal textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      font-size: 14px;
-      font-family: inherit;
-      color: #334155;
-      outline: none;
-      transition: all 0.2s;
-      background: rgba(255, 255, 255, 0.8);
-      box-sizing: border-box;
-      margin-bottom: 16px;
-    }
-    #fp-widget-modal select:hover,
-    #fp-widget-modal textarea:hover {
-      border-color: #94a3b8;
-    }
-    #fp-widget-modal select:focus,
-    #fp-widget-modal textarea:focus {
-      border-color: \${CONFIG.primaryColor};
-      box-shadow: 0 0 0 4px \${CONFIG.primaryFocus};
-      background: #fff;
-    }
-    #fp-widget-modal textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-    #fp-widget-modal .fp-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      margin-top: 20px;
-    }
-    #fp-widget-modal button {
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    #fp-widget-cancel {
-      background: transparent;
-      color: #64748b;
-    }
-    #fp-widget-cancel:hover {
-      background: #f1f5f9;
-      color: #334155;
-    }
-    #fp-widget-submit {
-      background: \${CONFIG.primaryColor};
-      color: \${CONFIG.textColor};
-      box-shadow: 0 4px 6px -1px \${CONFIG.primaryShadow};
-    }
-    #fp-widget-submit:hover {
-      filter: brightness(0.9);
-      transform: translateY(-1px);
-    }
-    #fp-widget-submit:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
-    #fp-widget-close {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      color: #cbd5e1;
-      padding: 4px;
-      display: flex;
-      border-radius: 6px;
-      transition: all 0.2s;
-    }
-    #fp-widget-close:hover {
-      background: #f1f5f9;
-      color: #64748b;
-    }
-    #fp-widget-success {
-      text-align: center;
-      padding: 20px 0;
-      color: #059669;
-      font-weight: 700;
-      display: none;
-    }
-    #fp-widget-error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #dc2626;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      display: none;
-    }
-    #fp-widget-error.fp-show {
-      display: block;
-    }
-    .fp-group {
-      margin-bottom: 16px;
-    }
-    .fp-group:last-of-type {
-      margin-bottom: 0;
+    #fp-widget-iframe.fp-open {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: scale(1) !important;
     }
   \`;
-
-  // Create style element
-  const styleEl = document.createElement('style');
-  styleEl.textContent = styles;
-  document.head.appendChild(styleEl);
+  document.head.appendChild(style);
 
   // Create floating button
-  const button = document.createElement('button');
-  button.id = 'fp-widget-button';
-  button.innerHTML = '${iconContent}${showText ? `<span>${buttonText}</span>` : ''}';
-  button.setAttribute('aria-label', 'Open feedback form');
-  button.setAttribute('aria-expanded', 'false');
-  document.body.appendChild(button);
+  var btn = document.createElement('button');
+  btn.id = 'fp-widget-btn';
+  btn.innerHTML = '${iconContent}${showText ? `<span>${buttonText}</span>` : ''}';
+  btn.setAttribute('aria-label', 'Open feedback form');
+  btn.setAttribute('aria-expanded', 'false');
+  document.body.appendChild(btn);
 
-  // Create modal
-  const modal = document.createElement('div');
-  modal.id = 'fp-widget-modal';
-  modal.innerHTML = \`
-    <button id="fp-widget-close" aria-label="Close">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <div id="fp-widget-form-container">
-      <h3>We value your feedback</h3>
-      <p class="fp-desc">Found a bug? Have a suggestion? Let us know!</p>
-      <div id="fp-widget-error"></div>
-      <div class="fp-group">
-        <label for="fp-widget-type">Type</label>
-        <select id="fp-widget-type">
-          <option value="Bug">Bug Report</option>
-          <option value="Feature">Feature Request</option>
-          <option value="Other">Other</option>
-        </select>
-      </div>
-      <div class="fp-group">
-        <label for="fp-widget-message">Message</label>
-        <textarea id="fp-widget-message" placeholder="Tell us what you think..."></textarea>
-      </div>
-      <div class="fp-buttons">
-        <button type="button" id="fp-widget-cancel">Cancel</button>
-        <button type="button" id="fp-widget-submit">Send Feedback</button>
-      </div>
-    </div>
-    <div id="fp-widget-success">Thank you! We've received your feedback.</div>
-  \`;
-  document.body.appendChild(modal);
+  // Create iframe (hidden initially)
+  var iframe = document.createElement('iframe');
+  iframe.id = 'fp-widget-iframe';
+  iframe.src = IFRAME_URL;
+  iframe.setAttribute('title', 'Feedback Form');
+  iframe.setAttribute('loading', 'lazy');
+  document.body.appendChild(iframe);
 
-  // Event handlers
-  const typeSelect = document.getElementById('fp-widget-type');
-  const messageTextarea = document.getElementById('fp-widget-message');
-  const submitBtn = document.getElementById('fp-widget-submit');
-  const cancelBtn = document.getElementById('fp-widget-cancel');
-  const closeBtn = document.getElementById('fp-widget-close');
-  const errorDiv = document.getElementById('fp-widget-error');
-  const formContainer = document.getElementById('fp-widget-form-container');
-  const successDiv = document.getElementById('fp-widget-success');
+  var isOpen = false;
 
-  let isOpen = false;
-
-  function openModal() {
-    isOpen = true;
-    modal.classList.add('fp-open');
-    button.setAttribute('aria-expanded', 'true');
-    formContainer.style.display = 'block';
-    successDiv.style.display = 'none';
-    messageTextarea.value = '';
-    typeSelect.value = 'Bug';
-    errorDiv.classList.remove('fp-show');
-    setTimeout(() => messageTextarea.focus(), 150);
-  }
-
-  function closeModal() {
-    isOpen = false;
-    modal.classList.remove('fp-open');
-    button.setAttribute('aria-expanded', 'false');
-  }
-
-  function toggleModal() {
+  function toggle() {
+    isOpen = !isOpen;
     if (isOpen) {
-      closeModal();
+      iframe.classList.add('fp-open');
+      btn.setAttribute('aria-expanded', 'true');
     } else {
-      openModal();
+      iframe.classList.remove('fp-open');
+      btn.setAttribute('aria-expanded', 'false');
     }
   }
 
-  function showError(message) {
-    errorDiv.textContent = message;
-    errorDiv.classList.add('fp-show');
-  }
-
-  async function submitFeedback() {
-    const type = typeSelect.value;
-    const message = messageTextarea.value.trim();
-
-    if (message.length < 3) {
-      showError('Please enter at least 3 characters.');
-      return;
-    }
-
-    errorDiv.classList.remove('fp-show');
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Sending...';
-
-    try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          projectKey: PROJECT_KEY,
-          type: type,
-          message: message,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'Failed to submit feedback');
-      }
-
-      formContainer.style.display = 'none';
-      successDiv.style.display = 'block';
-
-      setTimeout(() => {
-        closeModal();
-        submitBtn.textContent = 'Send Feedback';
-        submitBtn.disabled = false;
-      }, 3000);
-    } catch (error) {
-      showError(error.message || 'Something went wrong. Please try again.');
-      submitBtn.textContent = 'Send Feedback';
-      submitBtn.disabled = false;
+  function close() {
+    if (isOpen) {
+      isOpen = false;
+      iframe.classList.remove('fp-open');
+      btn.setAttribute('aria-expanded', 'false');
     }
   }
 
-  // Event listeners
-  button.addEventListener('click', toggleModal);
-  cancelBtn.addEventListener('click', closeModal);
-  closeBtn.addEventListener('click', closeModal);
-  submitBtn.addEventListener('click', submitFeedback);
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    toggle();
+  });
 
-  // Handle Escape key
-  document.addEventListener('keydown', function(e) {
-    if ((e.key === 'Escape' || e.key === 'Esc') && isOpen) {
-      closeModal();
+  // Listen for messages from iframe
+  window.addEventListener('message', function(e) {
+    if (e.origin !== '${backendUrl.replace(/\/$/, '')}') return;
+    if (e.data === 'fp-close') {
+      close();
     }
   });
 
-  // Close on click outside
+  // Close on Escape key
+  document.addEventListener('keydown', function(e) {
+    if ((e.key === 'Escape' || e.key === 'Esc') && isOpen) {
+      close();
+    }
+  });
+
+  // Close when clicking outside
   document.addEventListener('click', function(e) {
-    if (isOpen && !modal.contains(e.target) && e.target !== button && !button.contains(e.target)) {
-      closeModal();
+    if (isOpen && e.target !== btn && !btn.contains(e.target)) {
+      close();
     }
   });
 
@@ -487,14 +263,306 @@ export const serveWidget = async (req: Request, res: Response): Promise<void> =>
   res.send(widgetJs);
 };
 
-// Helper function to convert hex to RGB
-function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return result
-    ? {
-      r: parseInt(result[1], 16),
-      g: parseInt(result[2], 16),
-      b: parseInt(result[3], 16),
+/**
+ * GET /widget.html
+ * Serves the widget HTML content for the iframe (completely isolated)
+ */
+export const serveWidgetHtml = async (req: Request, res: Response): Promise<void> => {
+  const projectKey = req.query.key as string;
+
+  if (!projectKey) {
+    res.status(400).send('Missing project key');
+    return;
+  }
+
+  const project = await projectService.getProjectByKey(projectKey);
+
+  if (!project) {
+    res.status(404).send('Invalid project key');
+    return;
+  }
+
+  const primaryColor = (req.query.primary as string) || project.widgetPrimary || '#2563EB';
+  const textColor = (req.query.textColor as string) || project.widgetTextColor || '#FFFFFF';
+  const bgColor = (req.query.bg as string) || project.widgetBackground || '#FFFFFF';
+
+  const backendUrl = config.isProduction
+    ? config.backendUrl
+    : `http://localhost:${config.port}`;
+
+  // Generate primary color with alpha for focus states
+  const primaryRgb = hexToRgb(primaryColor);
+  const primaryFocus = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.15)` : 'rgba(37, 99, 235, 0.15)';
+  const primaryShadow = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.4)` : 'rgba(37, 99, 235, 0.4)';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    : null;
-}
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: ${bgColor};
+      padding: 24px;
+      min-height: 100vh;
+    }
+    .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: #cbd5e1;
+      padding: 4px;
+      display: flex;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .close-btn:hover {
+      background: #f1f5f9;
+      color: #64748b;
+    }
+    h3 {
+      margin: 0 0 4px 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .desc {
+      margin: 0 0 20px 0;
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+    select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #334155;
+      outline: none;
+      transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.8);
+      margin-bottom: 16px;
+    }
+    select:hover, textarea:hover {
+      border-color: #94a3b8;
+    }
+    select:focus, textarea:focus {
+      border-color: ${primaryColor};
+      box-shadow: 0 0 0 4px ${primaryFocus};
+      background: #fff;
+    }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+    .buttons {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .cancel-btn {
+      background: transparent;
+      color: #64748b;
+    }
+    .cancel-btn:hover {
+      background: #f1f5f9;
+      color: #334155;
+    }
+    .submit-btn {
+      background: ${primaryColor};
+      color: ${textColor};
+      box-shadow: 0 4px 6px -1px ${primaryShadow};
+    }
+    .submit-btn:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+    }
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      display: none;
+    }
+    .error.show { display: block; }
+    .success {
+      text-align: center;
+      padding: 40px 20px;
+      color: #059669;
+      font-weight: 700;
+      display: none;
+    }
+    .success.show { display: block; }
+    .form-container.hidden { display: none; }
+    .group { margin-bottom: 16px; }
+    .group:last-of-type { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <button class="close-btn" id="closeBtn" aria-label="Close">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+
+  <div id="formContainer" class="form-container">
+    <h3>We value your feedback</h3>
+    <p class="desc">Found a bug? Have a suggestion? Let us know!</p>
+    <div id="error" class="error"></div>
+    <div class="group">
+      <label for="type">Type</label>
+      <select id="type">
+        <option value="Bug">Bug Report</option>
+        <option value="Feature">Feature Request</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div class="group">
+      <label for="message">Message</label>
+      <textarea id="message" placeholder="Tell us what you think..."></textarea>
+    </div>
+    <div class="buttons">
+      <button type="button" class="cancel-btn" id="cancelBtn">Cancel</button>
+      <button type="button" class="submit-btn" id="submitBtn">Send Feedback</button>
+    </div>
+  </div>
+
+  <div id="success" class="success">
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 16px; display: block; color: #059669;">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    Thank you! We've received your feedback.
+  </div>
+
+  <script>
+    var API_URL = '${backendUrl}/api/public/report';
+    var PROJECT_KEY = '${projectKey}';
+
+    var formContainer = document.getElementById('formContainer');
+    var successDiv = document.getElementById('success');
+    var errorDiv = document.getElementById('error');
+    var typeSelect = document.getElementById('type');
+    var messageTextarea = document.getElementById('message');
+    var submitBtn = document.getElementById('submitBtn');
+    var cancelBtn = document.getElementById('cancelBtn');
+    var closeBtn = document.getElementById('closeBtn');
+
+    function sendClose() {
+      window.parent.postMessage('fp-close', '*');
+    }
+
+    function showError(msg) {
+      errorDiv.textContent = msg;
+      errorDiv.classList.add('show');
+    }
+
+    function resetForm() {
+      formContainer.classList.remove('hidden');
+      successDiv.classList.remove('show');
+      errorDiv.classList.remove('show');
+      messageTextarea.value = '';
+      typeSelect.value = 'Bug';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Send Feedback';
+    }
+
+    closeBtn.addEventListener('click', sendClose);
+    cancelBtn.addEventListener('click', sendClose);
+
+    submitBtn.addEventListener('click', async function() {
+      var type = typeSelect.value;
+      var message = messageTextarea.value.trim();
+
+      if (message.length < 3) {
+        showError('Please enter at least 3 characters.');
+        return;
+      }
+
+      errorDiv.classList.remove('show');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending...';
+
+      try {
+        var response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            projectKey: PROJECT_KEY,
+            type: type,
+            message: message
+          })
+        });
+
+        var data = await response.json();
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Failed to submit feedback');
+        }
+
+        formContainer.classList.add('hidden');
+        successDiv.classList.add('show');
+
+        setTimeout(function() {
+          sendClose();
+          setTimeout(resetForm, 300);
+        }, 2500);
+      } catch (err) {
+        showError(err.message || 'Something went wrong. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Send Feedback';
+      }
+    });
+
+    // Auto-focus the textarea when opened
+    setTimeout(function() { messageTextarea.focus(); }, 100);
+  </script>
+</body>
+</html>`;
+
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.send(html);
+};

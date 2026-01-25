@@ -16,6 +16,7 @@ import {
     publicCors,
     protectedCors
 } from './middleware';
+import { widgetController } from './controllers';
 
 const app = express();
 
@@ -94,6 +95,9 @@ app.get('/', (req, res) => {
 // Widget routes (public CORS - allows all origins)
 // No rate limiting for widget.js as it's just serving static JS
 app.use('/widget.js', publicCors, widgetRoutes);
+
+// Widget HTML for iframe (public CORS - allows embedding from any origin)
+app.get('/widget.html', publicCors, widgetController.serveWidgetHtml);
 
 // Public API routes (public CORS - for widget submissions)
 // Apply feedback rate limiter to prevent spam
