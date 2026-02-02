@@ -1,12 +1,10 @@
 import config from '../config';
 import { Sentiment } from '@prisma/client';
 
-interface GeminiResponse {
-    candidates?: {
-        content?: {
-            parts?: {
-                text?: string;
-            }[];
+interface GroqResponse {
+    choices?: {
+        message?: {
+            content?: string;
         };
     }[];
 }
@@ -24,38 +22,35 @@ Sentiment:`;
 
     try {
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${config.geminiApiKey}`,
+            'https://api.groq.com/openai/v1/chat/completions',
             {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.geminiApiKey}`,
                 },
                 body: JSON.stringify({
-                    contents: [
+                    model: 'moonshotai/kimi-k2-instruct-0905',
+                    messages: [
                         {
-                            parts: [
-                                {
-                                    text: prompt,
-                                },
-                            ],
+                            role: 'user',
+                            content: prompt,
                         },
                     ],
-                    generationConfig: {
-                        temperature: 0.1,
-                        maxOutputTokens: 10,
-                    },
+                    temperature: 0.1,
+                    max_tokens: 10,
                 }),
             }
         );
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Gemini API error:', errorText);
+            console.error('Groq API error:', errorText);
             throw new Error('Failed to analyze sentiment');
         }
 
-        const data = (await response.json()) as GeminiResponse;
-        const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase();
+        const data = (await response.json()) as GroqResponse;
+        const resultText = data.choices?.[0]?.message?.content?.trim().toLowerCase();
 
         // Validate and normalize the response
         if (resultText?.includes('positive')) return 'positive';
