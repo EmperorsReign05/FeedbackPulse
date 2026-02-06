@@ -1,5 +1,5 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://feedback-pulse-murex.vercel.app'),
@@ -7,6 +7,12 @@ export const metadata: Metadata = {
     description: 'A modern SaaS platform for collecting and managing user feedback with AI-powered sentiment analysis.',
     keywords: ['feedback', 'saas', 'user feedback', 'sentiment analysis', 'widget'],
     authors: [{ name: 'Feedback Pulse' }],
+    manifest: '/manifest.json',
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+        title: 'Feedback Pulse',
+    },
     openGraph: {
         title: 'Feedback Pulse',
         description: 'Collect & Manage User Feedback with AI-Powered Insights',
@@ -19,12 +25,20 @@ export const metadata: Metadata = {
         description: 'Collect & Manage User Feedback with AI-Powered Insights',
     },
     icons: {
-        icon: '/icon.svg',
+        icon: '/icons/icon.svg',
+        apple: '/icons/icon.svg',
     },
     robots: {
         index: true,
         follow: true,
     },
+};
+
+export const viewport: Viewport = {
+    themeColor: '#3ec043',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
 };
 
 export default function RootLayout({

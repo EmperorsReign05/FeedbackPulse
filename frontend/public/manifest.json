@@ -1,0 +1,44 @@
+{
+    "name": "Feedback Pulse",
+    "short_name": "FeedbackPulse",
+    "description": "A modern SaaS platform for collecting and managing user feedback with AI-powered sentiment analysis.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0a0a1a",
+    "theme_color": "#3ec043",
+    "orientation": "portrait-primary",
+    "scope": "/",
+    "icons": [
+        {
+            "src": "/icons/icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon.svg",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "categories": [
+        "productivity",
+        "business",
+        "utilities"
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "View your feedback dashboard",
+            "url": "/dashboard",
+            "icons": [
+                {
+                    "src": "/icons/icon.svg",
+                    "sizes": "any"
+                }
+            ]
+        }
+    ]
+}
