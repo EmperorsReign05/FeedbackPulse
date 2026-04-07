@@ -235,17 +235,7 @@ The widget will automatically:
    - `BACKEND_URL` (your Render URL)
    - `NODE_ENV=production`
 
-### Frontend (Vercel)
-
-1. Import project on Vercel
-2. Set root directory to `frontend`
-3. Framework: Next.js (auto-detected)
-4. Add environment variables:
-   - `NEXT_PUBLIC_API_BASE_URL` (your Render backend URL)
-   - `NEXT_PUBLIC_APP_URL` (your Vercel app URL)
-   - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` (for Google Sign-in)
-
-### Frontend (Netlify) - Alternative
+### Frontend (Netlify)
 
 1. Import project on Netlify from GitHub
 2. Set base directory to `frontend`
